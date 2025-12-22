@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="tg" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Istanbul Fashion Tj - Либосҳои Муосири Туркӣ ва Узбекӣ</title>
+
+    <meta name="google-site-verification" content="IwD6d5oSelRMyJZ3CbrA1e7Ydo7TTmKIGZen79PO1wA" />
+	
+    <meta name="description" content="Istanbul Fashion Tj - Либосҳои муосири Туркӣ ва Узбекӣ дар Тоҷикистон. Фароҳам овардани либосҳои сифатӣ аз Туркия ва Ӯзбекистон.">
+    <meta name="keywords" content="либосҳои туркӣ, либосҳои узбекӣ, мода, истанбул, тоҷикистон, душанбе, харид, кийим">
+    <meta name="author" content="Istanbul Fashion Tj">
+    <meta property="og:title" content="Istanbul Fashion Tj - Либосҳои Муосири Туркӣ ва Узбекӣ">
+    <meta property="og:description" content="Либосҳои сифатӣ аз Туркия ва Ӯзбекистон дар Тоҷикистон.">
+    <meta property="og:image" content="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png">
+    <meta property="og:url" content="https://istanbulfashiontj.github.io/istanbul-fashion-web/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    
+	<link rel="icon" type="image/png" href="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" />
+
+    <script>
+        const API_BASE = 'https://istanbulfashiontj.pythonanywhere.com';
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5FBF', 
+                        'primary-dark': '#6D28D9',
+                        accent: '#F59E0B', 
+                        'accent-dark': '#D97706',
+                        dark: '#0F172A',
+                        light: '#F8FAFC',
+                        surface: '#FFFFFF'
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'glow': '0 0 20px rgba(139, 95, 191, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8B5FBF; }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .product-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        .product-image-container img {
+            transition: transform 0.5s ease;
+        }
+        .product-card:hover .product-image-container img {
+            transform: scale(1.05);
+        }
+        
+        .action-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .product-card:hover .action-overlay {
+            opacity: 1;
+        }
+        
+        @media (max-width: 640px) {
+            .action-overlay {
+                background: transparent;
+                opacity: 1;
+                align-items: flex-end;
+                justify-content: flex-end;
+                padding: 10px;
+                pointer-events: none; 
+            }
+            .action-btn-mobile {
+                pointer-events: auto;
+                background: white;
+                color: #8B5FBF;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff; 
+            z-index: 9999; 
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+        }
+
+        .video-wrapper {
+            width: 180px; 
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open { transform: translateX(0); }
+        
+        .category-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        
+        .category-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+        }
+
+        /* Styles for the new beautiful Toast Notification */
+        #app-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #app-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #app-notification.success { border-left: 4px solid #10B981; }
+        #app-notification.error { border-left: 4px solid #EF4444; }
+
+        .notif-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .success .notif-icon-box { background: #D1FAE5; color: #10B981; }
+        .error .notif-icon-box { background: #FEE2E2; color: #EF4444; }
+    </style>
+</head>
+<body class="bg-light text-slate-800">
+
+    <div id="preloader">
+        <div class="video-wrapper">
+            <video autoplay loop muted playsinline>
+                <source src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.mp4" type="video/mp4">
+                <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Loading..." class="w-full h-full object-contain">
+            </video>
+        </div>
+    </div>
+
+    <!-- Container for the new Notification -->
+    <div id="app-notification">
+        <div class="notif-icon-box">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-slate-800" id="notif-title">Success</p>
+            <p class="text-xs text-slate-500 truncate" id="notif-message">Message goes here</p>
+        </div>
+    </div>
+
+    <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center h-16 sm:h-20">
+                <button id="mobile-menu-btn" class="lg:hidden text-2xl text-dark hover:text-primary transition">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Istanbul Wear" class="h-10 w-10 sm:h-12 sm:w-12 object-contain group-hover:scale-110 transition-transform">
+                    <div class="hidden sm:block">
+                        <h1 class="text-xl font-bold leading-none tracking-tight">ISTANBUL<span class="text-primary">FASHION TJ</span></h1>
+                        <p class="text-[10px] text-slate-500 font-medium tracking-widest uppercase">Style from Turkey and Uzbekistan</p>
+                    </div>
+                </a>
+
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="index.html" class="text-sm font-semibold text-primary">Асосӣ</a>
+                    <a href="magazin.html" class="text-sm font-semibold text-slate-600 hover:text-primary transition">Мағоза</a>
+                    <div class="relative group">
+                        <button class="text-sm font-semibold text-slate-600 hover:text-primary transition flex items-center gap-1">
+                            Категорияҳо <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="absolute top-full left-0 w-48 bg-white shadow-soft rounded-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform translate-y-2 group-hover:translate-y-0 duration-200">
+                            <div id="desktop-categories-dropdown" class="flex flex-col">
+                                <span class="text-xs text-slate-400 p-2">Боргирӣ...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="tamos.html" class="text-sm font-semibold text-slate-600 hover:text-primary transition">Тамос</a>
+                </nav>
+
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <div class="hidden md:block relative group">
+                        <input type="text" id="desktop-search-input" placeholder="Ҷустуҷӯ..." class="bg-slate-100 border-none rounded-full py-2 px-4 pl-10 text-sm focus:ring-2 focus:ring-primary w-40 focus:w-64 transition-all duration-300 outline-none">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    </div>
+
+                    <a href="wishlist.html" class="relative p-2 text-slate-700 hover:text-primary transition">
+                        <i class="far fa-heart text-xl"></i>
+                        <span id="wishlist-count" class="absolute top-0 right-0 h-4 w-4 bg-accent text-[10px] font-bold text-white rounded-full flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+                    </a>
+                    
+                    <a href="sabad.html" class="relative p-2 text-slate-700 hover:text-primary transition">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                        <span id="cart-count" class="absolute top-0 right-0 h-4 w-4 bg-primary text-[10px] font-bold text-white rounded-full flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+                    </a>
+
+                    <div id="user-section" class="relative ml-1">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden backdrop-blur-sm transition-opacity"></div>
+    
+    <div id="mobile-menu" class="mobile-menu fixed top-0 left-0 h-full w-[80%] max-w-sm bg-white z-50 shadow-2xl overflow-y-auto">
+        <div class="p-5">
+            <div class="flex justify-between items-center mb-8">
+                <span class="font-bold text-xl">Меню</span>
+                <button id="close-menu-btn" class="text-slate-500 hover:text-danger p-2"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div id="mobile-user-card" class="bg-slate-50 rounded-2xl p-4 mb-6 flex items-center gap-3 border border-slate-100">
+                <div class="w-10 h-10 rounded-full bg-slate-200 animate-pulse"></div>
+                <div class="flex-1 space-y-2">
+                    <div class="h-4 bg-slate-200 rounded w-2/3 animate-pulse"></div>
+                </div>
+            </div>
+
+            <div class="mb-6 relative">
+                 <input type="text" id="mobile-search-input" placeholder="Ҷустуҷӯи маҳсулот..." class="w-full bg-slate-100 border-none rounded-xl py-3 px-4 pl-10 text-sm focus:ring-2 focus:ring-primary outline-none">
+                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            </div>
+
+            <nav class="space-y-1">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium">
+                    <i class="fas fa-home w-5"></i> Асосӣ
+                </a>
+                <a href="magazin.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium transition">
+                    <i class="fas fa-store w-5"></i> Мағоза
+                </a>
+                
+                <div class="py-2">
+                    <p class="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Категорияҳо</p>
+                    <div id="mobile-categories-list" class="space-y-1 pl-2">
+                        
+                    </div>
+                </div>
+
+                <a href="tamos.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium transition">
+                    <i class="fas fa-headset w-5"></i> Тамос
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="pt-16 sm:pt-20">
+        <section class="relative group">
+            <div class="swiper hero-swiper h-[60vh] sm:h-[75vh] min-h-[500px]">
+                <div class="swiper-wrapper" id="hero-wrapper">
+                    <div class="swiper-slide bg-slate-200 flex items-center justify-center">
+                        <div class="animate-pulse flex flex-col items-center">
+                            <div class="h-8 w-64 bg-slate-300 rounded mb-4"></div>
+                            <div class="h-4 w-48 bg-slate-300 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next hidden sm:flex text-white hover:text-primary transition"></div>
+                <div class="swiper-button-prev hidden sm:flex text-white hover:text-primary transition"></div>
+            </div>
+        </section>
+
+        <section class="py-10 bg-white border-b border-slate-100">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
+                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition" data-aos="fade-up" data-aos-delay="0">
+                        <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-1">
+                            <i class="fas fa-truck text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-sm sm:text-base">Расонидан</h3>
+                        <p class="text-xs text-slate-500">Суръат ва сифат</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition" data-aos="fade-up" data-aos-delay="100">
+                        <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent mb-1">
+                            <i class="fas fa-medal text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-sm sm:text-base">Сифати Аслӣ</h3>
+                        <p class="text-xs text-slate-500">Истеҳсоли Туркия</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition" data-aos="fade-up" data-aos-delay="200">
+                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 mb-1">
+                            <i class="fas fa-undo text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-sm sm:text-base">Бозгашт</h3>
+                        <p class="text-xs text-slate-500">Кафолати иваз</p>
+                    </div>
+                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition" data-aos="fade-up" data-aos-delay="300">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-1">
+                            <i class="fas fa-headset text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-sm sm:text-base">Дастгирӣ</h3>
+                        <p class="text-xs text-slate-500">Ҳар рӯз 24/7</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-dark">Категорияҳо</h2>
+                        <p class="text-slate-500 mt-1">Интихоби васеъ барои ҳама</p>
+                    </div>
+                    <a href="magazin.html" class="hidden sm:flex items-center text-primary font-semibold hover:gap-2 transition-all">
+                        Ҳамаашро дидан <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+                
+                <div id="categories-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                    
+                </div>
+                
+                <div class="mt-6 sm:hidden text-center">
+                    <a href="magazin.html" class="btn-primary inline-flex items-center justify-center w-full py-3 rounded-xl bg-slate-100 text-slate-700 font-semibold">
+                        Ҳамаашро дидан
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-slate-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-10">
+                    <span class="text-accent font-bold tracking-wider text-xs uppercase mb-2 block">Коллексияи нав</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-dark mb-4">Навгониҳо</h2>
+                    <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+                </div>
+
+                <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
+                    <div class="product-card bg-white rounded-2xl p-3 shadow-sm">
+                        <div class="aspect-[3/4] bg-slate-200 rounded-xl mb-4 animate-pulse"></div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-12">
+                    <a href="magazin.html" class="inline-block px-8 py-3 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/30 hover:-translate-y-1 transition transform">
+                        Ба Мағоза Гузаштан
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 relative overflow-hidden">
+            <div class="absolute inset-0 bg-dark">
+                <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80" class="w-full h-full object-cover opacity-20" alt="Background">
+            </div>
+            <div class="container mx-auto px-4 relative z-10 text-center">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Аз навгониҳо бохабар шавед!</h2>
+                <p class="text-slate-300 mb-8 max-w-xl mx-auto">Ба бюллетени мо обуна шавед ва 10% тахфиф барои хариди аввалин ба даст оред.</p>
+                
+                <form id="subscribe-form" class="max-w-md mx-auto flex flex-col sm:flex-row gap-2">
+                    <input type="email" id="sub-email" placeholder="Почтаи электронии шумо" class="flex-1 px-5 py-3 rounded-full bg-white/10 border border-white/20 text-white placeholder-slate-400 focus:outline-none focus:bg-white/20 backdrop-blur-sm transition" required>
+                    <button type="submit" class="px-8 py-3 bg-accent hover:bg-accent-dark text-white font-bold rounded-full transition shadow-lg shadow-accent/20">Обуна</button>
+                </form>
+                <p id="sub-message" class="text-sm mt-3 h-5"></p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-1">
+                    <a href="index.html" class="flex items-center gap-2 mb-4">
+                        <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Logo" class="h-10 object-contain">
+                        <span class="font-bold text-xl">ISTANBUL<span class="text-primary">FASHION</span></span>
+                    </a>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-4">
+                        Мо беҳтарин либосҳоро мустақиман аз Туркия, Узбакистон ба Тоҷикистон меорем. Сифати олӣ ва нархҳои дастрас.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="https://www.instagram.com/istanbulfashion.tj/" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        <a href="https://chat.whatsapp.com/IvuY0dM9dTAICyOAFsXg9r?mode=hqrc" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-telegram-plane"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Мағоза</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="magazin.html" class="hover:text-primary transition">Мардона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Занона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Кӯдакона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Навгониҳо</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Кӯмак</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="tamos.html" class="hover:text-primary transition">Тамос бо мо</a></li>
+                        <li><a href="tamos.html" class="hover:text-primary transition">Саволҳои зиёд такроршаванда</a></li>
+                        <li><a href="tamos.html" class="hover:text-primary transition">Шартҳои хизматрасонӣ</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Тамос</h4>
+                    <ul class="space-y-3 text-sm text-slate-500">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt text-primary mt-1"></i>
+                            <span>ш.Душанбе, Б.Корвон, тарфаи Тилобозор, дарвозаи 4, қатори 3, аз тарафи дасти чап контейнер 3.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone-alt text-primary"></i>
+                            <span>+992 81-639-99-99</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-envelope text-primary"></i>
+                            <span>info@istanbulwear.tj</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-100 pt-6 text-center text-sm text-slate-400">
+                <p>&copy; 2025 Istanbul Fashion Tj. Ҳамаи ҳуқуқҳо маҳфузанд.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        AOS.init({ duration: 800, offset: 50, once: true });
+        
+        const preloader = document.getElementById('preloader');
+        function hidePreloader() {
+            if (preloader) {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.visibility = 'hidden';
+                    preloader.style.display = 'none';
+                }, 500);
+            }
+        }
+        setTimeout(hidePreloader, 1500);
+        
+        const state = {
+            cart: JSON.parse(localStorage.getItem('cart') || '[]'),
+            wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]'),
+            allProducts: [], 
+            user: {
+                token: localStorage.getItem('userToken'),
+                name: localStorage.getItem('userName'),
+                id: localStorage.getItem('userId')
+            }
+        };
+
+        const els = {
+            cartCount: document.getElementById('cart-count'),
+            wishlistCount: document.getElementById('wishlist-count'),
+            userSection: document.getElementById('user-section'),
+            mobileUserCard: document.getElementById('mobile-user-card'),
+            productsGrid: document.getElementById('products-grid'),
+            categoriesGrid: document.getElementById('categories-grid'),
+            categoriesList: document.getElementById('mobile-categories-list'),
+            desktopCategoriesDropdown: document.getElementById('desktop-categories-dropdown'),
+            heroWrapper: document.getElementById('hero-wrapper'),
+        };
+
+        const handleSearch = (e) => {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query) {
+                    window.location.href = `magazin.html?q=${encodeURIComponent(query)}`;
+                }
+            }
+        };
+
+        const desktopSearchInput = document.getElementById('desktop-search-input');
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+
+        if(desktopSearchInput) desktopSearchInput.addEventListener('keydown', handleSearch);
+        if(mobileSearchInput) mobileSearchInput.addEventListener('keydown', handleSearch);
+
+        const updateCounts = () => {
+            els.cartCount.innerText = state.cart.reduce((a, b) => a + (b.quantity || 1), 0);
+            
+            const wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            els.wishlistCount.innerText = wishlistItems.length;
+            
+            els.cartCount.style.transform = state.cart.length > 0 ? 'scale(1)' : 'scale(0)';
+            els.wishlistCount.style.transform = wishlistItems.length > 0 ? 'scale(1)' : 'scale(0)';
+        };
+
+        const renderUser = () => {
+            if (state.user.token) {
+                els.userSection.innerHTML = `
+                    <div class="relative group cursor-pointer ml-2">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold shadow-lg">
+                            ${state.user.name ? state.user.name.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div class="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 w-48 z-50">
+                            <div class="bg-white rounded-xl shadow-soft p-2 border border-slate-100">
+                                <div class="px-3 py-2 border-b border-slate-100 mb-1">
+                                    <p class="font-bold text-sm text-dark truncate">${state.user.name || 'Муштарӣ'}</p>
+                                    <p class="text-xs text-slate-500">Муштарӣ</p>
+                                </div>
+                                <a href="account.html" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition"><i class="fas fa-user-circle mr-2"></i> Кабинет</a>
+                                <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition"><i class="fas fa-sign-out-alt mr-2"></i> Баромад</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                els.mobileUserCard.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold text-xl shadow-md">
+                        ${state.user.name ? state.user.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-dark">${state.user.name || 'Муштарӣ'}</p>
+                        <button onclick="logout()" class="text-xs text-red-500 font-medium hover:underline">Баромад кардан</button>
+                    </div>
+                    <a href="account.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Кабинет</a>
+                `;
+            } else {
+                const loginBtn = `<a href="sabtinom.html" class="ml-2 px-5 py-2 bg-dark text-white text-sm font-semibold rounded-full hover:bg-primary transition shadow-lg hover:shadow-primary/30">Воридшавӣ</a>`;
+                els.userSection.innerHTML = loginBtn;
+                els.mobileUserCard.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xl">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-dark">Хуш омадед!</p>
+                        <p class="text-xs text-slate-500">Барои харид ворид шавед</p>
+                    </div>
+                    <a href="sabtinom.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Ворид</a>
+                `;
+            }
+        };
+
+        window.logout = () => {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userId');
+            window.location.reload();
+        };
+
+        const getImageUrl = (path) => {
+            if (!path) return '';
+            if (path.startsWith('http') || path.startsWith('https')) return path;
+            if (path.startsWith('/static/uploads/')) return API_BASE + path;
+            if (path.includes('uploads/')) return API_BASE + '/static/' + path;
+            return `${API_BASE}/static/uploads/${path}`;
+        };
+
+        const fetchData = async () => {
+            try {
+                const [slidesRes, productsRes, catsRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/slides`),
+                    fetch(`${API_BASE}/api/products?sort_by=newest`),
+                    fetch(`${API_BASE}/api/categories`),
+                ]);
+
+                const slides = await slidesRes.json();
+                const products = await productsRes.json();
+                const categories = await catsRes.json();
+                
+                state.allProducts = products;
+
+                renderSlides(slides);
+                renderProducts(products);
+                renderCategories(categories);
+
+            } catch (err) {
+                console.error('Error fetching data:', err);
+            }
+        };
+
+        const renderCategories = (categories) => {
+            const placeholders = [
+                'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1542060748-10c28b62716f?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1551488852-d814399e74d1?auto=format&fit=crop&w=500&q=80'
+            ];
+
+            els.categoriesList.innerHTML = categories.map(cat => `
+                <a href="magazin.html?category=${cat.name_tj}" class="block px-4 py-2 text-slate-500 hover:text-primary transition flex items-center justify-between">
+                    ${cat.name_tj} <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-400">${cat.product_count || 0}</span>
+                </a>
+            `).join('');
+
+            els.desktopCategoriesDropdown.innerHTML = categories.map(cat => `
+                <a href="magazin.html?category=${cat.name_tj}" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition">
+                    ${cat.name_tj}
+                </a>
+            `).join('');
+
+            let displayCategories = categories;
+            if (window.innerWidth < 768) {
+                displayCategories = categories.slice(0, 6);
+            }
+
+            if (displayCategories.length === 0) {
+                 els.categoriesGrid.innerHTML = '<div class="col-span-full text-center text-slate-400">Категорияҳо ёфт нашуданд.</div>';
+                 return;
+            }
+
+            els.categoriesGrid.innerHTML = displayCategories.map((cat, idx) => {
+                let imageSrc = getImageUrl(cat.image_url || cat.image); 
+                
+                if (!imageSrc) {
+                     imageSrc = placeholders[idx % placeholders.length];
+                }
+                
+                return `
+                <a href="magazin.html?category=${cat.name_tj}" class="category-card block group relative overflow-hidden rounded-2xl aspect-square shadow-md hover:shadow-xl transition-all duration-300" data-aos="fade-up" data-aos-delay="${idx * 50}">
+                    <img src="${imageSrc}" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="${cat.name_tj}" onerror="this.src='https://placehold.co/400?text=No+Image'">
+                    <div class="category-overlay absolute inset-0 flex flex-col justify-end p-6 transition duration-300">
+                        <h3 class="text-white text-xl sm:text-2xl font-bold translate-y-2 group-hover:translate-y-0 transition duration-300 drop-shadow-md">${cat.name_tj}</h3>
+                        <div class="flex items-center justify-between mt-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-x-1 transition duration-300 delay-75">
+                            <span class="w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center shadow-lg transform group-hover:translate-x-1 transition"><i class="fas fa-arrow-right text-sm"></i></span>
+                        </div>
+                    </div>
+                </a>
+            `}).join('');
+        };
+
+        const renderSlides = (slides) => {
+            if (!slides.length) {
+                els.heroWrapper.innerHTML = `
+                    <div class="swiper-slide relative">
+                        <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1920&q=80" class="absolute inset-0 w-full h-full object-cover" alt="Fashion">
+                        <div class="absolute inset-0 bg-gradient-to-r from-dark/80 to-transparent"></div>
+                        <div class="relative z-10 container mx-auto px-4 h-full flex flex-col justify-center">
+                            <div class="max-w-xl text-white p-4" data-aos="fade-right">
+                                <span class="inline-block px-3 py-1 bg-accent text-white text-xs font-bold rounded-full mb-4 shadow-lg shadow-accent/20">МОДАИ ТУРКӢ</span>
+                                <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4 drop-shadow-lg">Istanbul Wear TJ</h2>
+                                <p class="text-lg text-slate-200 mb-8 font-light">Либосҳои муосири Туркӣ барои шумо</p>
+                                <a href="magazin.html" class="inline-flex items-center px-8 py-4 bg-white text-dark font-bold rounded-full transition transform hover:scale-105 hover:bg-primary hover:text-white shadow-xl">
+                                    Харид кардан <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            els.heroWrapper.innerHTML = slides.map(slide => `
+                <div class="swiper-slide relative">
+                    <img src="${getImageUrl(slide.image_url || slide.image)}" class="absolute inset-0 w-full h-full object-cover" alt="${slide.title}" onerror="this.src='https://placehold.co/1920x800/292524/e7e5e4?text=Slide+Image'">
+                    <div class="absolute inset-0 bg-gradient-to-r from-dark/80 to-transparent"></div>
+                    <div class="relative z-10 container mx-auto px-4 h-full flex flex-col justify-center">
+                        <div class="max-w-xl text-white p-4" data-aos="fade-right">
+                            <span class="inline-block px-3 py-1 bg-accent text-white text-xs font-bold rounded-full mb-4 shadow-lg shadow-accent/20">КОЛЛЕКСИЯИ НАВ</span>
+                            <h2 class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4 drop-shadow-lg">${slide.title}</h2>
+                            <p class="text-lg text-slate-200 mb-8 font-light">${slide.subtitle}</p>
+                            <a href="${slide.link || 'magazin.html'}" class="inline-flex items-center px-8 py-4 bg-white text-dark font-bold rounded-full transition transform hover:scale-105 hover:bg-primary hover:text-white shadow-xl">
+                                Дидан <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            new Swiper('.hero-swiper', {
+                loop: true,
+                effect: 'fade',
+                speed: 1000,
+                autoplay: { delay: 5000, disableOnInteraction: false },
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+            });
+        };
+
+        const renderProducts = (products) => {
+            const latest = products.slice(0, 8);
+            
+            if (latest.length === 0) {
+                 els.productsGrid.innerHTML = '<div class="col-span-full text-center text-slate-400 p-8">Маҳсулоти нав ёфт нашуд.</div>';
+                 return;
+            }
+
+            els.productsGrid.innerHTML = latest.map((p, idx) => {
+                const price = p.price;
+                const oldPrice = p.old_price ? `<span class="text-xs text-slate-400 line-through mr-2">${p.old_price} с.</span>` : '';
+                const discount = p.old_price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : 0;
+                const badge = discount > 0 ? `<div class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md z-20">-${discount}%</div>` : '';
+                
+                const wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                const isInWishlist = wishlistItems.some(item => {
+                    if (typeof item === 'object') {
+                        return item.id === p.id;
+                    }
+                    return parseInt(item) === parseInt(p.id);
+                });
+                const heartClass = isInWishlist ? 'fas text-red-500' : 'far';
+
+                return `
+                <div class="product-card bg-white rounded-2xl p-3 shadow-soft border border-slate-50 group" data-aos="fade-up" data-aos-delay="${idx * 50}">
+                    <div class="product-image-container relative bg-slate-100 aspect-[3/4] mb-4">
+                        <a href="mahsolot.html?id=${p.id}" class="block w-full h-full">
+                            <img src="${getImageUrl(p.image_url || p.image)}" class="w-full h-full object-cover" alt="${p.name_tj}" onerror="this.src='https://placehold.co/400x600/f1f5f9/94a3b8?text=No+Image'">
+                        </a>
+                        ${badge}
+                        
+                        <div class="absolute top-3 right-3 z-20">
+                            <button onclick="toggleWishlist(${p.id}, this)" class="w-8 h-8 rounded-full bg-white/80 backdrop-blur text-slate-600 hover:text-red-500 hover:bg-white flex items-center justify-center transition shadow-sm">
+                                <i class="${heartClass} fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <div class="action-overlay">
+                            <a href="mahsolot.html?id=${p.id}" class="action-btn-mobile hidden sm:flex px-6 py-3 bg-white text-primary text-sm font-bold rounded-full shadow-lg hover:bg-primary hover:text-white transition items-center gap-2 transform active:scale-95 group-hover:scale-105">
+                                <i class="fas fa-eye"></i> Муфассал
+                            </a>
+                            <a href="mahsolot.html?id=${p.id}" class="action-btn-mobile sm:hidden w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                                <i class="fas fa-eye text-primary text-sm"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="px-1">
+                        <p class="text-xs text-slate-500 mb-1">${p.category || 'Умумӣ'}</p>
+                        <a href="mahsolot.html?id=${p.id}" class="block text-sm font-bold text-dark mb-2 truncate hover:text-primary transition">${p.name_tj}</a>
+                        <div class="flex items-center">
+                            ${oldPrice}
+                            <span class="text-primary font-bold">${price} с.</span>
+                        </div>
+                            <a href="mahsolot.html?id=${p.id}" class="mt-2 w-full flex items-center justify-center gap-2 bg-primary/10 text-primary font-semibold py-2 text-sm rounded-lg hover:bg-primary hover:text-white transition transform active:scale-95">
+                                <i class="fas fa-shopping-bag text-xs"></i> Ба сабад
+                            </a>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        };
+
+        const showNotification = (message, type = 'success') => {
+            const notif = document.getElementById('app-notification');
+            const title = document.getElementById('notif-title');
+            const msg = document.getElementById('notif-message');
+            const iconBox = notif.querySelector('.notif-icon-box');
+            const icon = iconBox.querySelector('i');
+            
+            notif.className = ''; 
+            if (type === 'success') {
+                notif.classList.add('success');
+                title.innerText = 'Муваффақона!';
+                icon.className = 'fas fa-check';
+            } else {
+                notif.classList.add('error');
+                title.innerText = 'Огоҳӣ!';
+                icon.className = 'fas fa-exclamation';
+            }
+            
+            msg.innerText = message;
+            notif.classList.add('show');
+            
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        };
+
+        window.toggleWishlist = async (productId, buttonElement) => {
+            const product = state.allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            let wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            const isInWishlist = wishlistItems.some(item => {
+                if (typeof item === 'object') {
+                    return item.id === productId;
+                }
+                return parseInt(item) === parseInt(productId);
+            });
+
+            if (isInWishlist) {
+                wishlistItems = wishlistItems.filter(item => {
+                    if (typeof item === 'object') {
+                        return item.id !== productId;
+                    }
+                    return parseInt(item) !== parseInt(productId);
+                });
+                
+                if (state.user.token) {
+                    try {
+                        await fetch(`${API_BASE}/api/wishlist/${productId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${state.user.token}`
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error removing from server wishlist:', error);
+                    }
+                }
+                
+                buttonElement.querySelector('i').className = 'far fa-heart';
+                showNotification('Аз рӯйхати орзуҳо хориҷ карда шуд.', 'error');
+            } else {
+                const itemToAdd = {
+                    id: product.id,
+                    name_tj: product.name_tj,
+                    price: product.price,
+                    image_url: product.image_url || product.image,
+                    category: product.category
+                };
+                
+                wishlistItems.push(itemToAdd);
+                
+                if (state.user.token) {
+                    try {
+                        await fetch(`${API_BASE}/api/wishlist/${productId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${state.user.token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error adding to server wishlist:', error);
+                    }
+                }
+                
+                buttonElement.querySelector('i').className = 'fas text-red-500 fa-heart';
+                showNotification('Ба рӯйхати орзуҳо илова шуд!', 'success');
+            }
+
+            localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
+            state.wishlist = wishlistItems;
+            updateCounts();
+        };
+
+        window.addToCart = (productId) => {
+            const product = state.allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            const existingItem = state.cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity = (existingItem.quantity || 1) + 1;
+                showNotification(`Миқдори "${product.name_tj}" зиёд карда шуд.`, 'success');
+            } else {
+                state.cart.push({
+                    id: product.id,
+                    name_tj: product.name_tj,
+                    price: product.price,
+                    image_url: product.image_url || product.image,
+                    quantity: 1
+                });
+                showNotification(`"${product.name_tj}" ба сабад илова шуд!`, 'success');
+            }
+
+            localStorage.setItem('cart', JSON.stringify(state.cart));
+            updateCounts();
+        };
+
+        document.getElementById('subscribe-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('sub-email').value;
+            const msg = document.getElementById('sub-message');
+            msg.innerText = "Равон карда мешавад...";
+            msg.className = "text-sm mt-3 h-5 font-bold text-slate-300";
+
+            try {
+                const res = await fetch(`${API_BASE}/api/subscribe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await res.json();
+                
+                msg.innerText = data.message || data.error;
+                if(res.ok) {
+                    msg.className = "text-sm mt-3 h-5 font-bold text-green-400";
+                    showNotification(data.message, 'success');
+                    e.target.reset();
+                } else {
+                    msg.className = "text-sm mt-3 h-5 font-bold text-red-400";
+                    showNotification(data.error, 'error');
+                }
+            } catch(e) {
+                msg.innerText = "Хатогӣ рӯй дод";
+                msg.className = "text-sm mt-3 h-5 text-red-400";
+                showNotification('Хатогӣ рӯй дод', 'error');
+            }
+        });
+
+        const toggleMenu = () => {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            const isOpen = menu.classList.contains('open');
+            
+            if(isOpen) {
+                menu.classList.remove('open');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            } else {
+                menu.classList.add('open');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        };
+        
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMenu);
+        document.getElementById('close-menu-btn').addEventListener('click', toggleMenu);
+        document.getElementById('mobile-menu-overlay').addEventListener('click', toggleMenu);
+
+        updateCounts();
+        renderUser();
+        fetchData();
+    });
+</script>
+</body>
+</html>
