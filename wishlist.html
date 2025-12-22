@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="tg" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Орзуҳои ман - Istanbul Fashion Tj</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="icon" type="image/png" href="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" />
+
+    <script>
+        const API_BASE = 'https://istanbulfashiontj.pythonanywhere.com';
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5FBF', 
+                        'primary-dark': '#6D28D9',
+                        accent: '#F59E0B', 
+                        'accent-dark': '#D97706',
+                        dark: '#0F172A',
+                        light: '#F8FAFC',
+                        surface: '#FFFFFF'
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'glow': '0 0 20px rgba(139, 95, 191, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8B5FBF; }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .product-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        .product-image-container img {
+            transition: transform 0.5s ease;
+        }
+        .product-card:hover .product-image-container img {
+            transform: scale(1.05);
+        }
+
+        .action-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .product-card:hover .action-overlay {
+            opacity: 1;
+        }
+        
+        @media (max-width: 640px) {
+            .action-overlay {
+                background: transparent;
+                opacity: 1;
+                align-items: flex-end;
+                justify-content: flex-end;
+                padding: 10px;
+                pointer-events: none; 
+            }
+            .action-btn-mobile {
+                pointer-events: auto;
+                background: white;
+                color: #8B5FBF;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff; 
+            z-index: 9999; 
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+        }
+
+        .video-wrapper {
+            width: 180px; 
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open { transform: translateX(0); }
+
+        #app-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #app-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #app-notification.success { border-left: 4px solid #10B981; }
+        #app-notification.error { border-left: 4px solid #EF4444; }
+
+        .notif-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .success .notif-icon-box { background: #D1FAE5; color: #10B981; }
+        .error .notif-icon-box { background: #FEE2E2; color: #EF4444; }
+    </style>
+</head>
+<body class="bg-light text-slate-800 flex flex-col min-h-screen">
+
+    <div id="preloader">
+        <div class="video-wrapper">
+            <video autoplay loop muted playsinline>
+                <source src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.mp4" type="video/mp4">
+                <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Loading..." class="w-full h-full object-contain">
+            </video>
+        </div>
+    </div>
+
+    <div id="app-notification">
+        <div class="notif-icon-box">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-slate-800" id="notif-title">Success</p>
+            <p class="text-xs text-slate-500 truncate" id="notif-message">Message goes here</p>
+        </div>
+    </div>
+
+    <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center h-16 sm:h-20">
+                <button id="mobile-menu-btn" class="lg:hidden text-2xl text-dark hover:text-primary transition">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Istanbul Wear" class="h-10 w-10 sm:h-12 sm:w-12 object-contain group-hover:scale-110 transition-transform">
+                    <div class="hidden sm:block">
+                        <h1 class="text-xl font-bold leading-none tracking-tight">ISTANBUL<span class="text-primary">FASHION TJ</span></h1>
+                        <p class="text-[10px] text-slate-500 font-medium tracking-widest uppercase">Style from Turkey and Uzbekistan</p>
+                    </div>
+                </a>
+
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="index.html" class="text-sm font-semibold text-slate-600 hover:text-primary transition">Асосӣ</a>
+                    <a href="magazin.html" class="text-sm font-semibold text-slate-600 hover:text-primary transition">Мағоза</a>
+                    <div class="relative group">
+                        <button class="text-sm font-semibold text-slate-600 hover:text-primary transition flex items-center gap-1">
+                            Категорияҳо <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="absolute top-full left-0 w-48 bg-white shadow-soft rounded-xl p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform translate-y-2 group-hover:translate-y-0 duration-200">
+                            <div id="desktop-categories-dropdown" class="flex flex-col">
+                                <span class="text-xs text-slate-400 p-2">Боргирӣ...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="tamos.html" class="text-sm font-semibold text-slate-600 hover:text-primary transition">Тамос</a>
+                </nav>
+
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <div class="hidden md:block relative group">
+                        <input type="text" id="desktop-search-input" placeholder="Ҷустуҷӯ..." class="bg-slate-100 border-none rounded-full py-2 px-4 pl-10 text-sm focus:ring-2 focus:ring-primary w-40 focus:w-64 transition-all duration-300 outline-none">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    </div>
+
+                    <a href="wishlist.html" class="relative p-2 text-primary transition">
+                        <i class="fas fa-heart text-xl"></i>
+                        <span id="wishlist-count" class="absolute top-0 right-0 h-4 w-4 bg-accent text-[10px] font-bold text-white rounded-full flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+                    </a>
+                    
+                    <a href="sabad.html" class="relative p-2 text-slate-700 hover:text-primary transition">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                        <span id="cart-count" class="absolute top-0 right-0 h-4 w-4 bg-primary text-[10px] font-bold text-white rounded-full flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+                    </a>
+
+                    <div id="user-section" class="relative ml-1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden backdrop-blur-sm transition-opacity"></div>
+    
+    <div id="mobile-menu" class="mobile-menu fixed top-0 left-0 h-full w-[80%] max-w-sm bg-white z-50 shadow-2xl overflow-y-auto">
+        <div class="p-5">
+            <div class="flex justify-between items-center mb-8">
+                <span class="font-bold text-xl">Меню</span>
+                <button id="close-menu-btn" class="text-slate-500 hover:text-danger p-2"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            
+            <div id="mobile-user-card" class="bg-slate-50 rounded-2xl p-4 mb-6 flex items-center gap-3 border border-slate-100">
+            </div>
+
+            <div class="mb-6 relative">
+                 <input type="text" id="mobile-search-input" placeholder="Ҷустуҷӯи маҳсулот..." class="w-full bg-slate-100 border-none rounded-xl py-3 px-4 pl-10 text-sm focus:ring-2 focus:ring-primary outline-none">
+                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            </div>
+
+            <nav class="space-y-1">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-600 font-medium transition">
+                    <i class="fas fa-home w-5"></i> Асосӣ
+                </a>
+                <a href="magazin.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 font-medium transition text-slate-600">
+                    <i class="fas fa-store w-5"></i> Мағоза
+                </a>
+                <a href="wishlist.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium">
+                    <i class="fas fa-heart w-5"></i> Орзуҳои ман
+                </a>
+                <a href="tamos.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 font-medium transition text-slate-600">
+                    <i class="fas fa-headset w-5"></i> Тамос
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="pt-24 pb-12 sm:pt-28 flex-grow">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-dark mb-3">Орзуҳои ман</h1>
+                <p class="text-slate-500">Маҳсулотҳое, ки ба шумо писанд омадаанд</p>
+                <div class="w-16 h-1 bg-primary mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <div id="loading-state" class="text-center py-20 hidden">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <p class="mt-2 text-slate-500">Боргирӣ...</p>
+            </div>
+
+            <div id="wishlist-container">
+                <div id="wishlist-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
+                </div>
+                
+                <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl shadow-soft mx-auto max-w-2xl mt-8">
+                    <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+                        <i class="far fa-heart text-4xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-dark mb-3">Рӯйхати орзуҳо холист</h2>
+                    <p class="text-slate-500 mb-8 max-w-md mx-auto">Шумо ҳоло ҳеҷ чизро интихоб накардаед. Ба мағоза равед ва чизҳои ҷолибро пайдо кунед!</p>
+                    <a href="magazin.html" class="inline-flex items-center px-8 py-3 bg-primary text-white font-bold rounded-full shadow-lg shadow-primary/30 hover:-translate-y-1 transition transform">
+                        Ба мағоза гузаштан
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 pt-12 pb-6 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-1">
+                    <a href="index.html" class="flex items-center gap-2 mb-4">
+                        <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Logo" class="h-10 object-contain">
+                        <span class="font-bold text-xl">ISTANBUL<span class="text-primary">FASHION</span></span>
+                    </a>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-4">
+                        Мо беҳтарин либосҳоро мустақиман аз Туркия, Узбакистон ба Тоҷикистон меорем. Сифати олӣ ва нархҳои дастрас.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="https://www.instagram.com/istanbulfashion.tj/" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        <a href="https://chat.whatsapp.com/IvuY0dM9dTAICyOAFsXg9r?mode=hqrc" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-telegram-plane"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Мағоза</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="magazin.html" class="hover:text-primary transition">Мардона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Занона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Кӯдакона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Навгониҳо</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Кӯмак</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="tamos.html" class="hover:text-primary transition">Тамос бо мо</a></li>
+                        <li><a href="tamos.html" class="hover:text-primary transition">Саволҳои зиёд такроршаванда</a></li>
+                        <li><a href="tamos.html" class="hover:text-primary transition">Шартҳои хизматрасонӣ</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Тамос</h4>
+                    <ul class="space-y-3 text-sm text-slate-500">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt text-primary mt-1"></i>
+                            <span>ш.Душанбе, Б.Корвон, тарфаи Тилобозор, дарвозаи 4, қатори 3, аз тарафи дасти чап контейнер 3.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone-alt text-primary"></i>
+                            <span>+992 81-639-99-99</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-envelope text-primary"></i>
+                            <span>info@istanbulwear.tj</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-100 pt-6 text-center text-sm text-slate-400">
+                <p>&copy; 2025 Istanbul Fashion Tj. Ҳамаи ҳуқуқҳо маҳфузанд.</p>
+            </div>
+        </div>
+    </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const preloader = document.getElementById('preloader');
+        function hidePreloader() {
+            if (preloader) {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.visibility = 'hidden';
+                    preloader.style.display = 'none';
+                }, 500);
+            }
+        }
+        setTimeout(hidePreloader, 1500);
+
+        const els = {
+            grid: document.getElementById('wishlist-grid'),
+            emptyState: document.getElementById('empty-state'),
+            loadingState: document.getElementById('loading-state'),
+            wishlistCount: document.getElementById('wishlist-count'),
+            cartCount: document.getElementById('cart-count'),
+            userSection: document.getElementById('user-section'),
+            mobileUserCard: document.getElementById('mobile-user-card'),
+            desktopCategoriesDropdown: document.getElementById('desktop-categories-dropdown')
+        };
+
+        const state = {
+            cart: JSON.parse(localStorage.getItem('cart') || '[]'),
+            wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]'),
+            user: {
+                token: localStorage.getItem('userToken'),
+                name: localStorage.getItem('userName'),
+                id: localStorage.getItem('userId')
+            }
+        };
+
+        const getImageUrl = (path) => {
+            if (!path) return 'https://placehold.co/400x600/f1f5f9/94a3b8?text=No+Image';
+            if (path.startsWith('http') || path.startsWith('https')) return path;
+            if (path.startsWith('/static/uploads/')) return API_BASE + path;
+            if (path.includes('uploads/')) return API_BASE + '/static/' + path;
+            return `${API_BASE}/static/uploads/${path}`;
+        };
+
+        const loadCategories = async () => {
+            try {
+                const response = await fetch(`${API_BASE}/api/categories`);
+                const categories = await response.json();
+                
+                els.desktopCategoriesDropdown.innerHTML = categories.map(cat => `
+                    <a href="magazin.html?category=${cat.name_tj}" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition">
+                        ${cat.name_tj}
+                    </a>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load categories');
+            }
+        };
+
+        const renderUser = () => {
+            if (state.user.token) {
+                els.userSection.innerHTML = `
+                    <div class="relative group cursor-pointer ml-2">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold shadow-lg">
+                            ${state.user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 w-48 z-50">
+                            <div class="bg-white rounded-xl shadow-soft p-2 border border-slate-100">
+                                <div class="px-3 py-2 border-b border-slate-100 mb-1">
+                                    <p class="font-bold text-sm text-dark truncate">${state.user.name}</p>
+                                    <p class="text-xs text-slate-500">Муштарӣ</p>
+                                </div>
+                                <a href="account.html" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition"><i class="fas fa-user-circle mr-2"></i> Кабинет</a>
+                                <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition"><i class="fas fa-sign-out-alt mr-2"></i> Баромад</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                els.mobileUserCard.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold text-xl shadow-md">
+                        ${state.user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-dark">${state.user.name}</p>
+                        <button onclick="logout()" class="text-xs text-red-500 font-medium hover:underline">Баромад кардан</button>
+                    </div>
+                    <a href="account.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Кабинет</a>
+                `;
+            } else {
+                const loginBtn = `<a href="sabtinom.html" class="ml-2 px-5 py-2 bg-dark text-white text-sm font-semibold rounded-full hover:bg-primary transition shadow-lg hover:shadow-primary/30">Воридшавӣ</a>`;
+                els.userSection.innerHTML = loginBtn;
+                els.mobileUserCard.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xl">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-dark">Хуш омадед!</p>
+                        <p class="text-xs text-slate-500">Барои харид ворид шавед</p>
+                    </div>
+                    <a href="sabtinom.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Ворид</a>
+                `;
+            }
+        };
+
+        window.logout = () => {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userId');
+            window.location.reload();
+        };
+
+        const loadWishlistProducts = async () => {
+            els.loadingState.classList.remove('hidden');
+            els.grid.innerHTML = '';
+            els.emptyState.classList.add('hidden');
+
+            let productsToShow = [];
+
+            if (state.user.token) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/wishlist`, {
+                        headers: {
+                            'Authorization': `Bearer ${state.user.token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        productsToShow = await response.json();
+                        console.log('Products from API:', productsToShow);
+                        
+                        const wishlistIds = productsToShow.map(p => p.id);
+                        localStorage.setItem('wishlist', JSON.stringify(wishlistIds));
+                        state.wishlist = wishlistIds;
+                    } else if (response.status === 404) {
+                        console.log('No wishlist found');
+                        productsToShow = [];
+                    } else {
+                        console.error('API error:', response.status);
+                        productsToShow = await loadFromLocalWithDetails();
+                    }
+                } catch (error) {
+                    console.error("API Error:", error);
+                    productsToShow = await loadFromLocalWithDetails();
+                }
+            } else {
+                productsToShow = await loadFromLocalWithDetails();
+            }
+
+            renderGrid(productsToShow);
+            els.loadingState.classList.add('hidden');
+            updateCounts();
+        };
+
+        const loadFromLocalWithDetails = async () => {
+            let savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            console.log('Local wishlist IDs:', savedWishlist);
+            
+            if (savedWishlist.length === 0) {
+                return [];
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/products`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const allProducts = await response.json();
+
+                const filteredProducts = allProducts.filter(p => {
+                    const productId = p.id || p.product_id;
+                    return savedWishlist.some(item => {
+                        if (typeof item === 'object') {
+                            return item.id === productId;
+                        }
+                        return parseInt(item) === parseInt(productId);
+                    });
+                });
+                
+                console.log('Filtered products:', filteredProducts.length);
+                return filteredProducts;
+            } catch (error) {
+                console.error('Error loading products:', error);
+                return savedWishlist.filter(item => typeof item === 'object');
+            }
+        };
+
+        const renderGrid = (products) => {
+            console.log('Rendering products:', products);
+            
+            if (products.length === 0) {
+                showEmpty();
+                return;
+            }
+
+            els.grid.classList.remove('hidden');
+            els.grid.innerHTML = products.map((p, idx) => {
+                const price = p.price || 0;
+                const oldPrice = p.old_price ? `<span class="text-xs text-slate-400 line-through mr-2">${p.old_price} с.</span>` : '';
+                const productId = p.id || p.product_id || idx;
+                const imageUrl = p.image_url || p.image || '';
+                const name = p.name_tj || p.name || 'Бе ном';
+                const category = p.category || 'Маҳсулот';
+                
+                return `
+                <div class="product-card bg-white rounded-2xl p-3 shadow-soft border border-slate-50 group" style="animation-delay: ${idx * 0.1}s">
+                    <div class="product-image-container relative bg-slate-100 aspect-[3/4] mb-4">
+                        <a href="mahsolot.html?id=${productId}" class="block w-full h-full">
+                            <img src="${getImageUrl(imageUrl)}" class="w-full h-full object-cover" alt="${name}" onerror="this.src='https://placehold.co/400x600/f1f5f9/94a3b8?text=No+Image'">
+                        </a>
+                        
+                        <button onclick="removeFromWishlist(${productId})" class="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur text-red-500 rounded-full flex items-center justify-center shadow-md hover:bg-red-500 hover:text-white transition z-20" title="Нест кардан">
+                            <i class="fas fa-trash-alt text-xs"></i>
+                        </button>
+
+                        <div class="action-overlay">
+                            <a href="mahsolot.html?id=${productId}" class="action-btn-mobile hidden sm:flex px-6 py-3 bg-white text-primary text-sm font-bold rounded-full shadow-lg hover:bg-primary hover:text-white transition items-center gap-2 transform active:scale-95 group-hover:scale-105">
+                                <i class="fas fa-eye"></i> Муфассал
+                            </a>
+                            <a href="mahsolot.html?id=${productId}" class="action-btn-mobile sm:hidden w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
+                                <i class="fas fa-eye text-primary text-sm"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="px-1">
+                        <p class="text-xs text-slate-500 mb-1">${category}</p>
+                        <a href="mahsolot.html?id=${productId}" class="block font-bold text-dark truncate mb-2 hover:text-primary transition">${name}</a>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                ${oldPrice}
+                                <span class="text-primary font-bold text-lg">${price} с.</span>
+                            </div>
+                        </div>
+                         <a href="mahsolot.html?id=${productId}" class="mt-3 w-full flex items-center justify-center gap-2 bg-primary/10 text-primary font-semibold py-2 text-sm rounded-lg hover:bg-primary hover:text-white transition transform active:scale-95">
+                            <i class="fas fa-shopping-bag text-xs"></i> Ба сабад
+                        </a>
+                    </div>
+                </div>
+            `}).join('');
+        };
+
+        const showEmpty = () => {
+            els.grid.classList.add('hidden');
+            els.emptyState.classList.remove('hidden');
+        };
+
+        window.removeFromWishlist = async (id) => {
+            console.log('Removing product ID:', id);
+            
+            if (state.user.token) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/wishlist/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${state.user.token}`
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        console.error('Server delete failed:', response.status);
+                        showNotification('Хато дар нест кардани маҳсулот', 'error');
+                        return;
+                    } else {
+                        console.log('Removed from server successfully');
+                    }
+                } catch (e) {
+                    console.error("API delete failed:", e);
+                    showNotification('Хато дар пайваст шудан ба сервер', 'error');
+                }
+            }
+
+            let currentList = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            const newList = currentList.filter(item => {
+                if (typeof item === 'object') {
+                    return item.id !== id;
+                }
+                return parseInt(item) !== parseInt(id);
+            });
+            
+            console.log('Old list:', currentList);
+            console.log('New list:', newList);
+            
+            localStorage.setItem('wishlist', JSON.stringify(newList));
+            state.wishlist = newList;
+            
+            showNotification('Маҳсулот аз рӯйхати орзуҳо хориҷ карда шуд', 'success');
+            loadWishlistProducts();
+        };
+
+        const updateCounts = () => {
+            const list = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            els.wishlistCount.innerText = list.length;
+            els.cartCount.innerText = cart.reduce((a, b) => a + (b.quantity || 1), 0);
+            
+            els.wishlistCount.style.transform = list.length > 0 ? 'scale(1)' : 'scale(0)';
+            els.cartCount.style.transform = cart.length > 0 ? 'scale(1)' : 'scale(0)';
+        };
+
+        const showNotification = (message, type = 'success') => {
+            const notif = document.getElementById('app-notification');
+            const title = document.getElementById('notif-title');
+            const msg = document.getElementById('notif-message');
+            const iconBox = notif.querySelector('.notif-icon-box');
+            const icon = iconBox.querySelector('i');
+            
+            notif.className = ''; 
+            if (type === 'success') {
+                notif.classList.add('success');
+                title.innerText = 'Муваффақона!';
+                icon.className = 'fas fa-check';
+            } else {
+                notif.classList.add('error');
+                title.innerText = 'Огоҳӣ!';
+                icon.className = 'fas fa-exclamation';
+            }
+            
+            msg.innerText = message;
+            notif.classList.add('show');
+            
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        };
+
+        const handleSearch = (e) => {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query) {
+                    window.location.href = `magazin.html?q=${encodeURIComponent(query)}`;
+                }
+            }
+        };
+
+        const desktopSearchInput = document.getElementById('desktop-search-input');
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        if(desktopSearchInput) desktopSearchInput.addEventListener('keydown', handleSearch);
+        if(mobileSearchInput) mobileSearchInput.addEventListener('keydown', handleSearch);
+
+        const toggleMenu = () => {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            const isOpen = menu.classList.contains('open');
+            
+            if(isOpen) {
+                menu.classList.remove('open');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            } else {
+                menu.classList.add('open');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        };
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMenu);
+        document.getElementById('close-menu-btn').addEventListener('click', toggleMenu);
+        document.getElementById('mobile-menu-overlay').addEventListener('click', toggleMenu);
+
+        updateCounts();
+        renderUser();
+        loadCategories();
+        loadWishlistProducts();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="tg" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тамос - Istanbul Fashion Tj</title>
+    
+    <meta name="description" content="Бо Istanbul Fashion Tj дар тамос бошед. Шумораи телефон, суроға, почтаи электронӣ ва саволҳои зуд-зуд додашаванда.">
+    <meta property="og:title" content="Тамос - Istanbul Fashion Tj">
+    <meta property="og:description" content="Бо Istanbul Fashion Tj дар тамос бошед.">
+    <meta property="og:image" content="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png">
+    <meta property="og:url" content="https://istanbulfashiontj.github.io/istanbul-fashion-web/tamos.html">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="icon" type="image/png" href="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" />
+    
+    <script>
+        const API_BASE = 'https://istanbulfashiontj.pythonanywhere.com';
+        
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5FBF',
+                        'primary-dark': '#6D28D9',
+                        accent: '#F59E0B',
+                        'accent-dark': '#D97706',
+                        dark: '#0F172A',
+                        light: '#F8FAFC',
+                        surface: '#FFFFFF',
+                        danger: '#EF4444',
+                        success: '#10B981'
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'glow': '0 0 20px rgba(139, 95, 191, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8B5FBF; }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .input-field {
+            width: 100%;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            transition: all 0.3s;
+            outline: none;
+            font-size: 14px;
+        }
+        .input-field:focus {
+            background: #FFFFFF;
+            border-color: #8B5FBF;
+            box-shadow: 0 0 0 3px rgba(139, 95, 191, 0.1);
+        }
+
+        .faq-item {
+            border: 1px solid #F1F5F9;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .faq-item.active {
+            border-color: #8B5FBF;
+            background: #F8FAFC;
+        }
+        .faq-header {
+            cursor: pointer;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        .faq-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 16px;
+            color: #64748B;
+        }
+        .faq-item.active .faq-body {
+            padding-bottom: 16px;
+        }
+        .faq-icon {
+            transition: transform 0.3s;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+            color: #8B5FBF;
+        }
+
+        .social-link {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s;
+        }
+        .social-link:hover { transform: translateY(-5px); }
+
+        #preloader {
+            position: fixed; inset: 0; background: white; z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+        }
+        
+        #app-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #app-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #app-notification.success { border-left: 4px solid #10B981; }
+        #app-notification.error { border-left: 4px solid #EF4444; }
+        .notif-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .success .notif-icon-box { background: #D1FAE5; color: #10B981; }
+        .error .notif-icon-box { background: #FEE2E2; color: #EF4444; }
+    </style>
+</head>
+
+<body class="bg-light text-slate-800">
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    </div>
+
+    <!-- Notification -->
+    <div id="app-notification">
+        <div class="notif-icon-box">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-slate-800" id="notif-title">Success</p>
+            <p class="text-xs text-slate-500 truncate" id="notif-message">Message goes here</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center h-16 sm:h-20">
+                <button id="mobile-menu-btn" class="lg:hidden text-2xl text-dark hover:text-primary transition">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Istanbul Wear" class="h-9 w-9 sm:h-10 sm:w-10 object-contain group-hover:scale-110 transition-transform">
+                    <div class="hidden sm:block">
+                        <span class="font-bold text-lg tracking-tight">ISTANBUL<span class="text-primary">FASHION</span></span>
+                    </div>
+                </a>
+
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="index.html" class="text-sm font-semibold text-slate-600 hover:text-primary transition">Асосӣ</a>
+                    <a href="magazin.html" class="text-sm font-semibold text-slate-600 hover:text-primary transition">Мағоза</a>
+                    <a href="tamos.html" class="text-sm font-bold text-primary">Тамос</a>
+                </nav>
+
+                <div class="flex items-center gap-3">
+                    <a href="wishlist.html" class="relative p-2 text-slate-600 hover:text-primary transition">
+                        <i class="far fa-heart text-xl"></i>
+                        <span id="wishlist-count" class="absolute top-0 right-0 h-4 w-4 bg-accent text-[10px] font-bold text-white rounded-full flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+                    </a>
+                    
+                    <a href="sabad.html" class="relative p-2 text-slate-600 hover:text-primary transition">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                        <span id="cart-count" class="absolute top-0 right-0 h-4 w-4 bg-primary text-[10px] font-bold text-white rounded-full flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+                    </a>
+
+                    <div id="user-section" class="relative ml-1 hidden sm:block"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay & Sidebar -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 z-50 hidden backdrop-blur-sm transition-opacity"></div>
+    
+    <div id="mobile-menu" class="fixed top-0 left-[-100%] w-[80%] max-w-sm h-full bg-white z-[60] shadow-2xl transition-all duration-300 p-6 overflow-y-auto">
+        <div class="flex justify-between items-center mb-8">
+            <span class="font-bold text-xl">Меню</span>
+            <button id="close-menu-btn" class="text-slate-500 hover:text-danger p-2"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        
+        <div id="mobile-user-card" class="bg-slate-50 rounded-2xl p-4 mb-6 flex items-center gap-3 border border-slate-100">
+            <div class="w-10 h-10 rounded-full bg-slate-200 animate-pulse"></div>
+            <div class="flex-1 space-y-2">
+                <div class="h-4 bg-slate-200 rounded w-2/3 animate-pulse"></div>
+            </div>
+        </div>
+
+        <nav class="space-y-1">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium transition">
+                <i class="fas fa-home w-5"></i> Асосӣ
+            </a>
+            <a href="magazin.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 font-medium transition">
+                <i class="fas fa-store w-5"></i> Мағоза
+            </a>
+            <a href="tamos.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium">
+                <i class="fas fa-headset w-5"></i> Тамос
+            </a>
+            <div class="pt-4 border-t border-slate-100">
+                <div id="mobile-user-links"></div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-24 sm:pt-28 pb-12 container mx-auto px-4 sm:px-6 min-h-screen">
+        
+        <!-- Hero Title -->
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-dark mb-4">Тамос бо мо</h1>
+            <p class="text-slate-500 max-w-2xl mx-auto">Саволе доред? Мо ҳамеша омодаем ба шумо кӯмак расонем. Ба мо нависед ё занг занед.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+            
+            <!-- Left: Contact Info -->
+            <div class="space-y-8" data-aos="fade-right">
+                
+                <!-- Contact Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-50 hover:-translate-y-1 transition">
+                        <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mb-4">
+                            <i class="fas fa-phone-alt text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-dark mb-1">Телефон</h3>
+                        <p class="text-slate-500 text-sm mb-2">Ҳар рӯз аз 08:00 то 22:00</p>
+                        <a href="tel:+992816399999" class="text-primary font-bold hover:underline">+992 81-639-99-99</a>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-50 hover:-translate-y-1 transition">
+                        <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center text-accent mb-4">
+                            <i class="fas fa-envelope text-xl"></i>
+                        </div>
+                        <h3 class="font-bold text-dark mb-1">Email</h3>
+                        <p class="text-slate-500 text-sm mb-2">Барои ҳамкорӣ ва саволҳо</p>
+                        <a href="mailto:info@istanbulwear.tj" class="text-accent font-bold hover:underline">info@istanbulfashiontj@gmail.com</a>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-50">
+                    <div class="flex items-start gap-4 mb-6">
+                        <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 flex-shrink-0">
+                            <i class="fas fa-map-marker-alt text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-dark mb-1">Суроғаи мо</h3>
+                            <p class="text-slate-500 text-sm">
+                                ш.Душанбе, Б.Корвон, тарфаи Тилобозор, дарвозаи 4, қатори 3, аз тарафи дасти чап контейнер 3.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Map Frame -->
+                    <div class="w-full h-64 bg-slate-100 rounded-xl overflow-hidden">
+                        <iframe src="https://maps.app.goo.gl/b2Nrn32md9YBqe9NA" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <!-- Socials -->
+                <div>
+                    <h3 class="font-bold text-dark mb-4">Мо дар шабакаҳои иҷтимоӣ</h3>
+                    <div class="flex gap-4">
+                        <a href="#" class="social-link bg-slate-100 text-slate-600 hover:bg-primary hover:text-white"><i class="fab fa-telegram-plane"></i></a>
+                        <a href="https://www.instagram.com/istanbulfashion.tj/" class="social-link bg-slate-100 text-slate-600 hover:bg-pink-500 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="https://chat.whatsapp.com/IvuY0dM9dTAICyOAFsXg9r?mode=hqrc" class="social-link bg-slate-100 text-slate-600 hover:bg-green-500 hover:text-white"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="social-link bg-slate-100 text-slate-600 hover:bg-blue-700 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: Contact Form -->
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 h-fit" data-aos="fade-left">
+                <h2 class="text-2xl font-bold text-dark mb-6">Ба мо нависед</h2>
+                <form id="contact-form" class="space-y-5">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700">Номи шумо *</label>
+                            <input type="text" id="name" required class="input-field" placeholder="Номи шумо">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700">Email *</label>
+                            <input type="email" id="email" required class="input-field" placeholder="example@mail.com">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700">Мавзуъ</label>
+                        <input type="text" id="subject" class="input-field" placeholder="Мавзуи паём">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700">Паём *</label>
+                        <textarea id="message" required rows="5" class="input-field resize-none" placeholder="Саволи худро нависед..."></textarea>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="w-full py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/30 hover:bg-primary-dark transition transform active:scale-95 flex items-center justify-center gap-2">
+                        <span>Фиристодан</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mt-20 max-w-3xl mx-auto" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-center text-dark mb-8">Саволҳои зуд-зуд додашаванда</h2>
+            
+            <div class="space-y-4">
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFaq(this)">
+                        <span>Чӣ тавр фармоиш диҳам?</span>
+                        <i class="fas fa-chevron-down faq-icon text-slate-400"></i>
+                    </div>
+                    <div class="faq-body">
+                        <p class="pb-4">Барои фармоиш додан, маҳсулотро ба сабад илова кунед ва тугмаи "Барасмиятдарорӣ"-ро пахш кунед. Сипас маълумоти худро ворид карда, тасдиқ намоед.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFaq(this)">
+                        <span>Расонидан чанд пул аст?</span>
+                        <i class="fas fa-chevron-down faq-icon text-slate-400"></i>
+                    </div>
+                    <div class="faq-body">
+                        <p class="pb-4">Дар шаҳри Душанбе расонидан ройгон аст. Барои ноҳияҳо ва дигар шаҳрҳо нарх аз 20 то 50 сомонӣ вобаста ба масофа мебошад.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFaq(this)">
+                        <span>Оё баргардонидани мол мумкин аст?</span>
+                        <i class="fas fa-chevron-down faq-icon text-slate-400"></i>
+                    </div>
+                    <div class="faq-body">
+                        <p class="pb-4">Бале, агар андоза мувофиқ наояд ё мол нуқсон дошта бошад, шумо метавонед онро дар давоми 24 соат иваз кунед ё баргардонед.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFaq(this)">
+                        <span>Кадом усулҳои пардохт мавҷуданд?</span>
+                        <i class="fas fa-chevron-down faq-icon text-slate-400"></i>
+                    </div>
+                    <div class="faq-body">
+                        <p class="pb-4">Шумо метавонед бо нақд дар вақти расонидан пардохт кунед, ё бо корти миллӣ, ҳамчунин аз воситаҳои пардохти электронӣ ва сармоягузорӣ истифода баред.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-header" onclick="toggleFaq(this)">
+                        <span>Кадом андозаҳо мавҷуданд?</span>
+                        <i class="fas fa-chevron-down faq-icon text-slate-400"></i>
+                    </div>
+                    <div class="faq-body">
+                        <p class="pb-4">Мо андозаҳои гуногунро пешниҳод мекунем: XS, S, M, L, XL, XXL. Ҳар маҳсулот андозаҳои муайян дорад, ки дар саҳифаи маҳсулот қайд карда шудааст.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 pt-12 pb-6">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-1">
+                    <a href="index.html" class="flex items-center gap-2 mb-4">
+                        <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Logo" class="h-10 object-contain">
+                        <span class="font-bold text-xl">ISTANBUL<span class="text-primary">FASHION</span></span>
+                    </a>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-4">
+                        Мо беҳтарин либосҳоро мустақиман аз Туркия, Узбакистон ба Тоҷикистон меорем. Сифати олӣ ва нархҳои дастрас.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="https://www.instagram.com/istanbulfashion.tj/" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        <a href="https://chat.whatsapp.com/IvuY0dM9dTAICyOAFsXg9r?mode=hqrc" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-telegram-plane"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Мағоза</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="magazin.html" class="hover:text-primary transition">Мардона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Занона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Кӯдакона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Навгониҳо</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Кӯмак</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="tamos.html" class="hover:text-primary transition">Тамос бо мо</a></li>
+                        <li><a href="tamos.html" class="hover:text-primary transition">Саволҳои зиёд такроршаванда</a></li>
+                        <li><a href="tamos.html" class="hover:text-primary transition">Шартҳои хизматрасонӣ</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Тамос</h4>
+                    <ul class="space-y-3 text-sm text-slate-500">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-map-marker-alt text-primary mt-1"></i>
+                            <span>ш.Душанбе, Б.Корвон, тарфаи Тилобозор, дарвозаи 4, қатори 3, аз тарафи дасти чап контейнер 3.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-phone-alt text-primary"></i>
+                            <span>+992 81-639-99-99</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fas fa-envelope text-primary"></i>
+                            <span>infoi@stanbulfashiontj@gmail.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-100 pt-6 text-center text-sm text-slate-400">
+                <p>&copy; 2025 Istanbul Fashion Tj. Ҳамаи ҳуқуқҳо маҳфузанд.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 800, once: true });
+            
+            setTimeout(() => {
+                document.getElementById('preloader').style.display = 'none';
+            }, 500);
+
+            const state = {
+                cart: JSON.parse(localStorage.getItem('cart') || '[]'),
+                wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]'),
+                user: {
+                    token: localStorage.getItem('userToken'),
+                    name: localStorage.getItem('userName'),
+                    role: localStorage.getItem('userRole')
+                }
+            };
+
+            const showNotification = (message, type = 'success') => {
+                const notif = document.getElementById('app-notification');
+                const title = document.getElementById('notif-title');
+                const msg = document.getElementById('notif-message');
+                const iconBox = notif.querySelector('.notif-icon-box');
+                const icon = iconBox.querySelector('i');
+                
+                notif.className = ''; 
+                if (type === 'success') {
+                    notif.classList.add('success');
+                    title.innerText = 'Муваффақона!';
+                    icon.className = 'fas fa-check';
+                } else {
+                    notif.classList.add('error');
+                    title.innerText = 'Огоҳӣ!';
+                    icon.className = 'fas fa-exclamation';
+                }
+                
+                msg.innerText = message;
+                notif.classList.add('show');
+                
+                setTimeout(() => {
+                    notif.classList.remove('show');
+                }, 3000);
+            };
+
+            const updateCounts = () => {
+                const cartCount = document.getElementById('cart-count');
+                const wishlistCount = document.getElementById('wishlist-count');
+                
+                cartCount.innerText = state.cart.reduce((a, b) => a + (b.quantity || 1), 0);
+                wishlistCount.innerText = state.wishlist.length;
+                
+                cartCount.style.transform = state.cart.length > 0 ? 'scale(1)' : 'scale(0)';
+                wishlistCount.style.transform = state.wishlist.length > 0 ? 'scale(1)' : 'scale(0)';
+            };
+
+            const updateUserUI = () => {
+                const userSection = document.getElementById('user-section');
+                const mobileUserCard = document.getElementById('mobile-user-card');
+                const mobileUserLinks = document.getElementById('mobile-user-links');
+                
+                if (state.user.token) {
+                    userSection.innerHTML = `
+                        <div class="relative group cursor-pointer ml-2">
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold shadow-lg">
+                                ${state.user.name ? state.user.name.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                            <div class="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 w-48 z-50">
+                                <div class="bg-white rounded-xl shadow-soft p-2 border border-slate-100">
+                                    <div class="px-3 py-2 border-b border-slate-100 mb-1">
+                                        <p class="font-bold text-sm text-dark truncate">${state.user.name || 'Муштарӣ'}</p>
+                                        <p class="text-xs text-slate-500">Муштарӣ</p>
+                                    </div>
+                                    <a href="account.html" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition"><i class="fas fa-user-circle mr-2"></i> Кабинет</a>
+                                    <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition"><i class="fas fa-sign-out-alt mr-2"></i> Баромад</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    mobileUserCard.innerHTML = `
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold text-xl shadow-md">
+                            ${state.user.name ? state.user.name.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-dark">${state.user.name || 'Хуш омадед!'}</p>
+                            <button onclick="logout()" class="text-xs text-red-500 font-medium hover:underline">Баромад кардан</button>
+                        </div>
+                        <a href="account.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Кабинет</a>
+                    `;
+                    
+                    mobileUserLinks.innerHTML = `
+                        <a href="account.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-700 font-medium">
+                            <i class="fas fa-user-circle w-5 text-slate-400"></i> Профил
+                        </a>
+                        <a href="wishlist.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-700 font-medium">
+                            <i class="fas fa-heart w-5 text-slate-400"></i> Орзуҳо
+                        </a>
+                    `;
+                } else {
+                    userSection.innerHTML = `<a href="sabtinom.html" class="ml-2 px-5 py-2 bg-dark text-white text-sm font-semibold rounded-full hover:bg-primary transition shadow-lg hover:shadow-primary/30">Воридшавӣ</a>`;
+                    
+                    mobileUserCard.innerHTML = `
+                        <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xl">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-dark">Хуш омадед!</p>
+                            <p class="text-xs text-slate-500">Барои тамос ворид шавед</p>
+                        </div>
+                        <a href="sabtinom.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Ворид</a>
+                    `;
+                    
+                    mobileUserLinks.innerHTML = `
+                        <a href="sabtinom.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 text-slate-700 font-medium">
+                            <i class="fas fa-sign-in-alt w-5 text-slate-400"></i> Воридшавӣ
+                        </a>
+                    `;
+                }
+            };
+
+            window.logout = () => {
+                localStorage.removeItem('userToken');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userRole');
+                window.location.reload();
+            };
+
+            const contactForm = document.getElementById('contact-form');
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const submitBtn = document.getElementById('submit-btn');
+                const originalText = submitBtn.innerHTML;
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Фиристодан...`;
+                
+                const formData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    subject: document.getElementById('subject').value,
+                    message: document.getElementById('message').value
+                };
+                
+                if (!formData.name || !formData.email || !formData.message) {
+                    showNotification('Лутфан ҳамаи майдонҳои зарурӣро пур кунед.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${API_BASE}/api/contact`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        showNotification('Паёми шумо қабул карда шуд. Ба зудӣ ба шумо ҷавоб медиҳем.', 'success');
+                        contactForm.reset();
+                    } else {
+                        showNotification(data.error || 'Хатогӣ рух дод. Лутфан дертар кӯшиш кунед.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Хатогӣ:', error);
+                    showNotification('Хатогӣ дар пайвастшавӣ ба сервер.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            });
+
+            window.toggleFaq = (header) => {
+                const item = header.parentElement;
+                const body = item.querySelector('.faq-body');
+                const icon = item.querySelector('.faq-icon');
+                
+                document.querySelectorAll('.faq-item').forEach(i => {
+                    if(i !== item) {
+                        i.classList.remove('active');
+                        i.querySelector('.faq-body').style.maxHeight = null;
+                    }
+                });
+
+                item.classList.toggle('active');
+                if (item.classList.contains('active')) {
+                    body.style.maxHeight = body.scrollHeight + "px";
+                } else {
+                    body.style.maxHeight = null;
+                }
+            };
+
+            const mobileMenu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('overlay');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeMenuBtn = document.getElementById('close-menu-btn');
+            
+            const toggleMenu = () => {
+                const isOpen = mobileMenu.style.left === '0px';
+                
+                if(isOpen) {
+                    mobileMenu.style.left = '-100%';
+                    overlay.classList.add('hidden');
+                    document.body.style.overflow = '';
+                } else {
+                    mobileMenu.style.left = '0';
+                    overlay.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+            };
+            
+            mobileMenuBtn.addEventListener('click', toggleMenu);
+            closeMenuBtn.addEventListener('click', toggleMenu);
+            overlay.addEventListener('click', toggleMenu);
+
+            updateUserUI();
+            updateCounts();
+        });
+    </script>
+</body>
+</html>

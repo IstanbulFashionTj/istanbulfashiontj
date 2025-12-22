@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="tg" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Маҳсулот - Istanbul Fashion Tj</title>
+    
+    <meta name="description" content="Шикори беҳтарин либосҳои сифатӣ дар Тоҷикистон. Сифати олӣ ва нархҳои дастрас аз Туркия ва Узбакистон.">
+    <meta property="og:title" content="Маҳсулот - Istanbul Fashion Tj">
+    <meta property="og:description" content="Шикори беҳтарин либосҳои сифатӣ дар Тоҷикистон.">
+    <meta property="og:image" content="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png">
+    <meta property="og:url" content="https://istanbulfashiontj.github.io/istanbul-fashion-web/mahsolot.html">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="icon" type="image/png" href="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" />
+    
+    <script>
+        const API_BASE = 'https://istanbulfashiontj.pythonanywhere.com';
+        
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5FBF',
+                        'primary-dark': '#6D28D9',
+                        accent: '#F59E0B',
+                        'accent-dark': '#D97706',
+                        dark: '#0F172A',
+                        light: '#F8FAFC',
+                        surface: '#FFFFFF',
+                        danger: '#EF4444',
+                        success: '#10B981'
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'glow': '0 0 20px rgba(139, 95, 191, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8B5FBF; }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .main-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            background: #f1f5f9;
+            cursor: zoom-in;
+        }
+        .main-image-container img {
+            transition: transform 0.3s ease;
+        }
+        .main-image-container:hover img {
+            transform: scale(1.02);
+        }
+        .thumbnail {
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+        .thumbnail:hover, .thumbnail.active {
+            border-color: #8B5FBF;
+            transform: scale(0.95);
+        }
+
+        .size-btn {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        .size-btn:hover:not(:disabled) { border-color: #8B5FBF; color: #8B5FBF; }
+        .size-btn.selected {
+            background: #8B5FBF; color: white; border-color: #8B5FBF;
+            box-shadow: 0 4px 12px rgba(139, 95, 191, 0.3);
+        }
+        .size-btn:disabled {
+            background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; text-decoration: line-through;
+        }
+
+        .mobile-sticky-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; padding: 12px 16px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            z-index: 40; display: none;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        @media(max-width: 640px) { .mobile-sticky-bar { display: flex; gap: 10px; } }
+
+        #preloader {
+            position: fixed; inset: 0; background: white; z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+        }
+        
+        .tab-btn {
+            position: relative;
+            color: #64748B;
+            transition: color 0.3s;
+        }
+        .tab-btn.active { color: #8B5FBF; font-weight: 700; }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 2px;
+            background: #8B5FBF; border-radius: 2px;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open { transform: translateX(0); }
+        
+        #app-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            z-index: 9999;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #app-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #app-notification.success { border-left: 4px solid #10B981; }
+        #app-notification.error { border-left: 4px solid #EF4444; }
+        .notif-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .success .notif-icon-box { background: #D1FAE5; color: #10B981; }
+        .error .notif-icon-box { background: #FEE2E2; color: #EF4444; }
+    </style>
+</head>
+
+<body class="bg-light text-slate-800 pb-20 sm:pb-0 flex flex-col min-h-screen">
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-primary"></div>
+    </div>
+
+    <!-- Notification -->
+    <div id="app-notification">
+        <div class="notif-icon-box">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-slate-800" id="notif-title">Success</p>
+            <p class="text-xs text-slate-500 truncate" id="notif-message">Message goes here</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center h-16 sm:h-20">
+                <button id="mobile-menu-btn" class="lg:hidden text-2xl text-dark hover:text-primary transition">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Istanbul Wear" class="h-10 w-10 sm:h-12 sm:w-12 object-contain group-hover:scale-110 transition-transform">
+                    <div class="hidden sm:block">
+                        <h1 class="text-xl font-bold leading-none tracking-tight">ISTANBUL<span class="text-primary">FASHION</span></h1>
+                    </div>
+                </a>
+
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="index.html" class="text-sm font-semibold text-slate-600 hover:text-primary transition">Асосӣ</a>
+                    <a href="magazin.html" class="text-sm font-semibold text-primary">Мағоза</a>
+                    <a href="tamos.html" class="text-sm font-semibold text-slate-600 hover:text-primary transition">Тамос</a>
+                </nav>
+
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <a href="wishlist.html" class="relative p-2 text-slate-700 hover:text-primary transition">
+                        <i class="far fa-heart text-xl"></i>
+                        <span id="wishlist-count" class="absolute top-0 right-0 h-4 w-4 bg-accent text-[10px] font-bold text-white rounded-full flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+                    </a>
+                    <a href="sabad.html" class="relative p-2 text-slate-700 hover:text-primary transition">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                        <span id="cart-count" class="absolute top-0 right-0 h-4 w-4 bg-primary text-[10px] font-bold text-white rounded-full flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+                    </a>
+                    <div id="user-section" class="relative ml-1"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden backdrop-blur-sm transition-opacity"></div>
+    
+    <!-- Mobile Menu Sidebar -->
+    <div id="mobile-menu" class="mobile-menu fixed top-0 left-0 h-full w-[80%] max-w-sm bg-white z-50 shadow-2xl overflow-y-auto">
+        <div class="p-5">
+            <div class="flex justify-between items-center mb-8">
+                <span class="font-bold text-xl">Меню</span>
+                <button id="close-menu-btn" class="text-slate-500 hover:text-danger p-2"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <nav class="space-y-1">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 font-medium transition text-slate-600">
+                    <i class="fas fa-home w-5"></i> Асосӣ
+                </a>
+                <a href="magazin.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium">
+                    <i class="fas fa-store w-5"></i> Мағоза
+                </a>
+                <a href="wishlist.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 font-medium transition text-slate-600">
+                    <i class="fas fa-heart w-5"></i> Орзуҳои ман
+                </a>
+                <a href="tamos.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 font-medium transition text-slate-600">
+                    <i class="fas fa-headset w-5"></i> Тамос
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <main class="pt-24 sm:pt-28 pb-12 container mx-auto px-4 sm:px-6 flex-grow">
+        
+        <!-- Skeleton Loader -->
+        <div id="skeleton-loader" class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+            <div class="space-y-4">
+                <div class="aspect-[3/4] rounded-3xl skeleton w-full"></div>
+                <div class="flex gap-4">
+                    <div class="w-20 h-20 rounded-xl skeleton"></div>
+                    <div class="w-20 h-20 rounded-xl skeleton"></div>
+                    <div class="w-20 h-20 rounded-xl skeleton"></div>
+                </div>
+            </div>
+            <div class="space-y-6 pt-4">
+                <div class="h-4 w-24 skeleton rounded-full"></div>
+                <div class="h-10 w-3/4 skeleton rounded-lg"></div>
+                <div class="h-8 w-32 skeleton rounded-lg"></div>
+                <div class="space-y-3 pt-6">
+                    <div class="h-4 w-20 skeleton rounded"></div>
+                    <div class="flex gap-3">
+                        <div class="w-12 h-12 rounded-xl skeleton"></div>
+                        <div class="w-12 h-12 rounded-xl skeleton"></div>
+                        <div class="w-12 h-12 rounded-xl skeleton"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Content -->
+        <div id="product-content" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+            
+            <!-- Left Column: Gallery -->
+            <div class="space-y-4" data-aos="fade-right">
+                <div class="main-image-container group aspect-[3/4] sm:aspect-square lg:aspect-[3/4] shadow-soft relative">
+                    <a href="javascript:history.back()" class="sm:hidden absolute top-2 left-2 z-20 w-10 h-10 rounded-full bg-white/80 backdrop-blur flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition shadow-md">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    
+                    <span id="discount-badge" class="absolute top-4 left-4 sm:left-4 bg-danger text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10 hidden">-20%</span>
+                    <button id="add-wishlist-btn" class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-slate-500 hover:text-danger shadow-md transition z-10">
+                        <i class="far fa-heart text-xl"></i>
+                    </button>
+                    <img id="main-image" src="" alt="Product" class="w-full h-full object-cover">
+                </div>
+                
+                <!-- Thumbnails -->
+                <div id="thumbnails-container" class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"></div>
+            </div>
+
+            <!-- Right Column: Details -->
+            <div class="pt-2 lg:pt-4" data-aos="fade-left">
+                <div class="mb-6">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span id="product-category" class="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">Категория</span>
+                        <div class="flex text-accent text-xs">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            <span class="text-slate-400 ml-1">(5.0)</span>
+                        </div>
+                    </div>
+                    <h1 id="product-title" class="text-3xl sm:text-4xl font-extrabold text-dark leading-tight mb-3">...</h1>
+                    <div class="flex items-end gap-3">
+                        <span id="product-price" class="text-3xl font-bold text-primary">0 с.</span>
+                        <span id="old-price" class="text-lg text-slate-400 line-through mb-1 hidden">0 с.</span>
+                    </div>
+                </div>
+
+                <!-- Size Selector -->
+                <div class="mb-8">
+                    <div class="flex justify-between mb-3">
+                        <span class="font-bold text-dark">Андозаро интихоб кунед</span>
+                        <button class="text-xs text-primary font-semibold underline">Ҷадвали андозаҳо</button>
+                    </div>
+                    <div id="size-container" class="flex flex-wrap gap-3">
+                    </div>
+                    <p id="stock-warning" class="text-xs text-danger mt-2 hidden font-semibold"><i class="fas fa-exclamation-circle mr-1"></i> Танҳо чанд дона мондааст!</p>
+                </div>
+
+                <!-- Quantity & Actions (Desktop) -->
+                <div class="hidden sm:block border-t border-slate-100 pt-6">
+                    <div class="flex gap-4">
+                        <div class="flex items-center bg-slate-100 rounded-xl px-2">
+                            <button onclick="changeQty(-1)" class="w-10 h-10 text-slate-500 hover:text-dark font-bold">-</button>
+                            <input type="text" id="qty-input" value="1" readonly class="w-8 bg-transparent text-center font-bold text-dark">
+                            <button onclick="changeQty(1)" class="w-10 h-10 text-slate-500 hover:text-dark font-bold">+</button>
+                        </div>
+                        <button onclick="addToCart()" class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl shadow-lg shadow-primary/30 transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <i class="fas fa-shopping-bag"></i> Ба сабад
+                        </button>
+                    </div>
+                    <div class="mt-4 flex gap-4 text-sm text-slate-500">
+                        <div class="flex items-center gap-2"><i class="fas fa-truck text-primary"></i> Расонидан: 24 соат</div>
+                        <div class="flex items-center gap-2"><i class="fas fa-shield-alt text-primary"></i> Кафолати аслӣ</div>
+                    </div>
+                </div>
+
+                <!-- Tabs: Description & Reviews -->
+                <div class="mt-10">
+                    <div class="flex gap-6 border-b border-slate-200 mb-6">
+                        <button onclick="switchTab('desc')" id="tab-desc" class="tab-btn active pb-3 font-medium">Тавсиф</button>
+                        <button onclick="switchTab('reviews')" id="tab-reviews" class="tab-btn pb-3 font-medium">Шарҳҳо</button>
+                        <button onclick="switchTab('delivery')" id="tab-delivery" class="tab-btn pb-3 font-medium">Расонидан</button>
+                    </div>
+
+                    <!-- Description Content -->
+                    <div id="content-desc" class="prose text-slate-600 leading-relaxed text-sm">
+                        <p id="product-desc">...</p>
+                    </div>
+
+                    <!-- Reviews Content -->
+                    <div id="content-reviews" class="hidden">
+                        <div id="reviews-list" class="space-y-4 mb-6">
+                            <p class="text-slate-400 text-sm">Ҳоло шарҳ нест.</p>
+                        </div>
+                        
+                        <!-- Add Review Form -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <h4 class="font-bold text-dark mb-3 text-sm">Шарҳ нависед</h4>
+                            <div class="flex gap-2 mb-3 text-2xl text-slate-300" id="star-rating">
+                                <i class="fas fa-star cursor-pointer hover:text-accent" data-val="1"></i>
+                                <i class="fas fa-star cursor-pointer hover:text-accent" data-val="2"></i>
+                                <i class="fas fa-star cursor-pointer hover:text-accent" data-val="3"></i>
+                                <i class="fas fa-star cursor-pointer hover:text-accent" data-val="4"></i>
+                                <i class="fas fa-star cursor-pointer hover:text-accent" data-val="5"></i>
+                            </div>
+                            <textarea id="review-text" class="w-full p-3 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-primary outline-none mb-3" rows="3" placeholder="Фикри худро нависед..."></textarea>
+                            <button onclick="submitReview()" class="px-4 py-2 bg-dark text-white text-sm font-bold rounded-lg transition hover:bg-primary">Фиристодан</button>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Content -->
+                    <div id="content-delivery" class="hidden text-sm text-slate-600 space-y-2">
+                        <p><strong class="text-dark">Душанбе:</strong> Расонидан ройгон дар давоми 24 соат.</p>
+                        <p><strong class="text-dark">Вилоятҳо:</strong> Расонидан тавассути такси ё почта (20-50 сомонӣ).</p>
+                        <p class="bg-yellow-50 p-3 rounded-lg text-yellow-700 mt-2"><i class="fas fa-info-circle mr-1"></i> Пардохт ҳангоми қабул (нақд ё Корти миллӣ).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Similar Products -->
+        <div id="similar-section" class="mt-20 hidden">
+            <h2 class="text-2xl font-bold text-dark mb-6">Шояд ба шумо маъқул шавад</h2>
+            <div id="similar-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Sticky Action Bar -->
+    <div class="mobile-sticky-bar border-t border-slate-100">
+        <div class="flex flex-col justify-center px-2">
+            <span class="text-xs text-slate-500">Нарх:</span>
+            <span id="sticky-price" class="font-bold text-primary text-lg">0 с.</span>
+        </div>
+        <button onclick="addToCart()" class="flex-1 bg-primary text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition">
+            Сабад <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 pt-12 pb-6 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-1">
+                    <a href="index.html" class="flex items-center gap-2 mb-4">
+                        <img src="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" alt="Logo" class="h-10 object-contain">
+                        <span class="font-bold text-xl">ISTANBUL<span class="text-primary">FASHION</span></span>
+                    </a>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-4">
+                        Мо беҳтарин либосҳоро мустақиман аз Туркия, Узбакистон ба Тоҷикистон меорем. Сифати олӣ ва нархҳои дастрас.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="https://www.instagram.com/istanbulfashion.tj/" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        <a href="https://chat.whatsapp.com/IvuY0dM9dTAICyOAFsXg9r?mode=hqrc" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-primary hover:text-white transition"><i class="fab fa-telegram-plane"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Мағоза</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="magazin.html" class="hover:text-primary transition">Мардона</a></li>
+                        <li><a href="magazin.html" class="hover:text-primary transition">Занона</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Кӯмак</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="tamos.html" class="hover:text-primary transition">Тамос бо мо</a></li>
+                        <li><a href="tamos.html" class="hover:text-primary transition">Шартҳо</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-dark mb-4">Тамос</h4>
+                    <ul class="space-y-3 text-sm text-slate-500">
+                        <li class="flex items-center gap-3"><i class="fas fa-phone-alt text-primary"></i> +992 81-639-99-99</li>
+                        <li class="flex items-center gap-3"><i class="fas fa-envelope text-primary"></i> info@istanbulwear.tj</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-100 pt-6 text-center text-sm text-slate-400">
+                <p>&copy; 2025 Istanbul Fashion Tj. Ҳамаи ҳуқуқҳо маҳфузанд.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        AOS.init({ duration: 800, once: true });
+        
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+        
+        if (!productId) {
+            window.location.href = 'magazin.html';
+            return;
+        }
+
+        const state = {
+            cart: JSON.parse(localStorage.getItem('cart') || '[]'),
+            wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]'),
+            user: {
+                token: localStorage.getItem('userToken'),
+                name: localStorage.getItem('userName'),
+                role: localStorage.getItem('userRole')
+            }
+        };
+
+        let productData = null;
+        let selectedSize = null;
+        let qty = 1;
+        let currentRating = 0;
+
+        const els = {
+            mainImg: document.getElementById('main-image'),
+            thumbs: document.getElementById('thumbnails-container'),
+            title: document.getElementById('product-title'),
+            price: document.getElementById('product-price'),
+            oldPrice: document.getElementById('old-price'),
+            cat: document.getElementById('product-category'),
+            desc: document.getElementById('product-desc'),
+            sizes: document.getElementById('size-container'),
+            loader: document.getElementById('preloader'),
+            skeleton: document.getElementById('skeleton-loader'),
+            content: document.getElementById('product-content'),
+            similar: document.getElementById('similar-grid'),
+            similarSection: document.getElementById('similar-section'),
+            wishlistBtn: document.getElementById('add-wishlist-btn'),
+            badge: document.getElementById('discount-badge'),
+            qtyInput: document.getElementById('qty-input'),
+            stickyPrice: document.getElementById('sticky-price'),
+            cartCount: document.getElementById('cart-count'),
+            wishlistCount: document.getElementById('wishlist-count'),
+            userSection: document.getElementById('user-section')
+        };
+
+        const getImageUrl = (path) => {
+            if (!path) return 'https://placehold.co/400x600/f1f5f9/94a3b8?text=No+Image';
+            if (path.startsWith('http') || path.startsWith('https')) return path;
+            if (path.startsWith('/static/uploads/')) return API_BASE + path;
+            if (path.includes('uploads/')) return API_BASE + '/static/' + path;
+            return `${API_BASE}/static/uploads/${path}`;
+        };
+
+        const showNotification = (message, type = 'success') => {
+            const notif = document.getElementById('app-notification');
+            const title = document.getElementById('notif-title');
+            const msg = document.getElementById('notif-message');
+            const iconBox = notif.querySelector('.notif-icon-box');
+            const icon = iconBox.querySelector('i');
+            
+            notif.className = ''; 
+            if (type === 'success') {
+                notif.classList.add('success');
+                title.innerText = 'Муваффақона!';
+                icon.className = 'fas fa-check';
+            } else {
+                notif.classList.add('error');
+                title.innerText = 'Огоҳӣ!';
+                icon.className = 'fas fa-exclamation';
+            }
+            
+            msg.innerText = message;
+            notif.classList.add('show');
+            
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        };
+
+        const updateUserUI = () => {
+            if (state.user.token) {
+                els.userSection.innerHTML = `
+                    <div class="relative group cursor-pointer ml-2">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold shadow-lg">
+                            ${state.user.name ? state.user.name.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div class="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 w-48 z-50">
+                            <div class="bg-white rounded-xl shadow-soft p-2 border border-slate-100">
+                                <div class="px-3 py-2 border-b border-slate-100 mb-1">
+                                    <p class="font-bold text-sm text-dark truncate">${state.user.name || 'Муштарӣ'}</p>
+                                    <p class="text-xs text-slate-500">Муштарӣ</p>
+                                </div>
+                                <a href="account.html" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition"><i class="fas fa-user-circle mr-2"></i> Кабинет</a>
+                                <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition"><i class="fas fa-sign-out-alt mr-2"></i> Баромад</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                els.userSection.innerHTML = `<a href="sabtinom.html" class="ml-2 px-5 py-2 bg-dark text-white text-sm font-semibold rounded-full hover:bg-primary transition shadow-lg hover:shadow-primary/30">Воридшавӣ</a>`;
+            }
+        };
+
+        window.logout = () => {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userRole');
+            window.location.reload();
+        };
+
+        const updateCounts = () => {
+            els.cartCount.innerText = state.cart.reduce((a, b) => a + (b.quantity || 1), 0);
+            
+            const wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            els.wishlistCount.innerText = wishlistItems.length;
+            
+            els.cartCount.style.transform = state.cart.length > 0 ? 'scale(1)' : 'scale(0)';
+            els.wishlistCount.style.transform = wishlistItems.length > 0 ? 'scale(1)' : 'scale(0)';
+        };
+
+        const checkWishlistStatus = () => {
+            const wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            const isInWishlist = wishlistItems.some(item => {
+                if (typeof item === 'object') {
+                    return item.id === productData.id;
+                }
+                return parseInt(item) === parseInt(productData.id);
+            });
+            
+            if (isInWishlist) {
+                els.wishlistBtn.innerHTML = '<i class="fas fa-heart text-danger text-xl"></i>';
+                els.wishlistBtn.setAttribute('data-in-wishlist', 'true');
+            } else {
+                els.wishlistBtn.innerHTML = '<i class="far fa-heart text-xl"></i>';
+                els.wishlistBtn.setAttribute('data-in-wishlist', 'false');
+            }
+        };
+
+        const fetchProduct = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/products/${productId}`);
+                if (!res.ok) throw new Error('Маҳсулот ёфт нашуд');
+                
+                productData = await res.json();
+                renderProduct(productData);
+                checkWishlistStatus();
+                fetchSimilar();
+                fetchReviews();
+                
+                els.loader.style.display = 'none';
+                els.skeleton.style.display = 'none';
+                els.content.classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Хатогӣ:', error);
+                els.loader.style.display = 'none';
+                els.skeleton.innerHTML = '<p class="text-center text-red-500 w-full col-span-2">Маҳсулот ёфт нашуд!</p>';
+            }
+        };
+
+        const renderProduct = (p) => {
+            els.title.innerText = p.name_tj || 'Бе ном';
+            els.price.innerText = `${p.price || 0} с.`;
+            els.stickyPrice.innerText = `${p.price || 0} с.`;
+            els.cat.innerText = p.category || 'Умумӣ';
+            els.desc.innerText = p.description_tj || 'Маълумот нест';
+            
+            if (p.old_price && p.old_price > p.price) {
+                els.oldPrice.innerText = `${p.old_price} с.`;
+                els.oldPrice.classList.remove('hidden');
+                els.badge.classList.remove('hidden');
+                const discount = Math.round(((p.old_price - p.price) / p.old_price) * 100);
+                els.badge.innerText = `-${discount}%`;
+            }
+
+            const mainImgUrl = getImageUrl(p.image_url || p.image);
+            els.mainImg.src = mainImgUrl;
+            
+            let images = [mainImgUrl];
+            if (p.additional_images_urls && p.additional_images_urls.length) {
+                images = [...images, ...p.additional_images_urls];
+            }
+            
+            if (images.length > 1) {
+                els.thumbs.innerHTML = images.map((img, i) => `
+                    <img src="${img}" class="thumbnail w-16 h-16 object-cover rounded-xl border border-slate-200 ${i === 0 ? 'active' : ''}" 
+                    onclick="changeImage('${img}', this)">
+                `).join('');
+            } else {
+                els.thumbs.style.display = 'none';
+            }
+
+            const inventory = p.inventory || [];
+            if (inventory.length === 0) {
+                els.sizes.innerHTML = '<button onclick="selectSize(\'Standard\', 999, this)" class="size-btn px-4 py-2 text-sm font-bold min-w-[50px] selected">Standard</button>';
+                selectedSize = 'Standard';
+            } else {
+                els.sizes.innerHTML = inventory.map(inv => `
+                    <button onclick="selectSize('${inv.size}', ${inv.quantity || 0}, this)" 
+                        class="size-btn px-4 py-2 text-sm font-bold min-w-[50px]" 
+                        ${(inv.quantity || 0) <= 0 ? 'disabled' : ''}>
+                        ${inv.size}
+                    </button>
+                `).join('');
+            }
+        };
+
+        window.changeImage = (src, el) => {
+            els.mainImg.style.opacity = '0.5';
+            setTimeout(() => {
+                els.mainImg.src = src;
+                els.mainImg.style.opacity = '1';
+            }, 150);
+            
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            if(el) el.classList.add('active');
+        };
+
+        window.selectSize = (size, qty, btn) => {
+            selectedSize = size;
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            const warning = document.getElementById('stock-warning');
+            if (qty < 5) {
+                warning.classList.remove('hidden');
+                warning.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i> Танҳо ${qty} дона мондааст!`;
+            } else {
+                warning.classList.add('hidden');
+            }
+        };
+
+        window.changeQty = (val) => {
+            qty += val;
+            if(qty < 1) qty = 1;
+            els.qtyInput.value = qty;
+        };
+
+        window.addToCart = () => {
+            if(!productData) {
+                showNotification('Маҳсулот ёфт нашуд!', 'error');
+                return;
+            }
+
+            const inventory = productData.inventory || [];
+            if(inventory.length > 0 && !selectedSize) {
+                showNotification('Лутфан, аввал андозаро интихоб кунед!', 'error');
+                els.sizes.classList.add('animate-pulse');
+                setTimeout(() => els.sizes.classList.remove('animate-pulse'), 500);
+                return;
+            }
+
+            const item = {
+                id: productData.id,
+                name_tj: productData.name_tj,
+                price: productData.price,
+                image_url: productData.image_url || productData.image,
+                selectedSize: selectedSize || 'Standard',
+                quantity: qty
+            };
+
+            const existing = state.cart.find(i => 
+                i.id === item.id && i.selectedSize === item.selectedSize
+            );
+            if(existing) {
+                existing.quantity += qty;
+                showNotification(`Миқдори "${productData.name_tj}" зиёд карда шуд`, 'success');
+            } else {
+                state.cart.push(item);
+                showNotification(`"${productData.name_tj}" ба сабад илова шуд!`, 'success');
+            }
+
+            localStorage.setItem('cart', JSON.stringify(state.cart));
+            updateCounts();
+        };
+
+        els.wishlistBtn.addEventListener('click', async () => {
+            if(!productData) return;
+
+            const isInWishlist = els.wishlistBtn.getAttribute('data-in-wishlist') === 'true';
+            
+            if (isInWishlist) {
+                // Хориҷ кардан аз wishlist
+                let wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                wishlistItems = wishlistItems.filter(item => {
+                    if (typeof item === 'object') {
+                        return item.id !== productData.id;
+                    }
+                    return parseInt(item) !== parseInt(productData.id);
+                });
+                localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
+                
+                // Агар корбари сабтиномшуда бошад, аз сервер низ хориҷ кунем
+                if (state.user.token) {
+                    try {
+                        await fetch(`${API_BASE}/api/wishlist/${productData.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${state.user.token}`
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Хатогӣ дар хориҷ кардани аз сервер:', error);
+                    }
+                }
+                
+                els.wishlistBtn.innerHTML = '<i class="far fa-heart text-xl"></i>';
+                els.wishlistBtn.setAttribute('data-in-wishlist', 'false');
+                showNotification('Аз рӯйхати орзуҳо хориҷ карда шуд.', 'error');
+            } else {
+                // Илова кардан ба wishlist
+                let wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                const itemToAdd = {
+                    id: productData.id,
+                    name_tj: productData.name_tj,
+                    price: productData.price,
+                    image_url: productData.image_url || productData.image,
+                    category: productData.category
+                };
+                
+                if (!wishlistItems.some(item => {
+                    if (typeof item === 'object') {
+                        return item.id === productData.id;
+                    }
+                    return parseInt(item) === parseInt(productData.id);
+                })) {
+                    wishlistItems.push(itemToAdd);
+                    localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
+                }
+                
+                // Агар корбари сабтиномшуда бошад, ба сервер низ илова кунем
+                if (state.user.token) {
+                    try {
+                        await fetch(`${API_BASE}/api/wishlist/${productData.id}`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${state.user.token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Хатогӣ дар илова кардани ба сервер:', error);
+                    }
+                }
+                
+                els.wishlistBtn.innerHTML = '<i class="fas fa-heart text-danger text-xl"></i>';
+                els.wishlistBtn.setAttribute('data-in-wishlist', 'true');
+                showNotification('Ба рӯйхати орзуҳо илова шуд!', 'success');
+            }
+            
+            updateCounts();
+        });
+
+        window.switchTab = (tabName) => {
+            ['desc', 'reviews', 'delivery'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.remove('active');
+                document.getElementById(`content-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+        };
+
+        const fetchSimilar = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/products?category=${productData.category}&limit=4`);
+                const products = await res.json();
+                const filtered = products.filter(p => p.id !== productData.id);
+                
+                if(filtered.length > 0) {
+                    els.similarSection.classList.remove('hidden');
+                    els.similar.innerHTML = filtered.map(p => `
+                        <a href="mahsolot.html?id=${p.id}" class="bg-white p-3 rounded-2xl shadow-soft border border-slate-100 hover:-translate-y-1 transition block product-card">
+                            <div class="aspect-[3/4] bg-slate-100 rounded-xl overflow-hidden mb-3">
+                                <img src="${getImageUrl(p.image_url || p.image)}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x600/f1f5f9/94a3b8?text=Image'">
+                            </div>
+                            <h4 class="font-bold text-sm text-dark truncate mb-1">${p.name_tj}</h4>
+                            <p class="text-primary font-bold">${p.price} с.</p>
+                        </a>
+                    `).join('');
+                }
+            } catch(error) {
+                console.error('Хатогӣ дар гирифтани маҳсулоти монанд:', error);
+            }
+        };
+
+        const fetchReviews = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews/product/${productId}`);
+                const reviews = await res.json();
+                const list = document.getElementById('reviews-list');
+                
+                if(reviews.length > 0) {
+                    list.innerHTML = reviews.map(r => `
+                        <div class="border-b border-slate-100 pb-4 last:border-0">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-dark text-sm">${r.user_name || 'Муштарӣ'}</span>
+                                <div class="text-accent text-xs">
+                                    ${'<i class="fas fa-star"></i>'.repeat(r.rating || 5)}
+                                </div>
+                            </div>
+                            <p class="text-slate-600 text-sm">${r.comment || ''}</p>
+                        </div>
+                    `).join('');
+                    document.getElementById('tab-reviews').innerText = `Шарҳҳо (${reviews.length})`;
+                }
+            } catch(error) {
+                console.error('Хатогӣ дар гирифтани шарҳҳо:', error);
+            }
+        };
+
+        document.querySelectorAll('#star-rating i').forEach(star => {
+            star.addEventListener('click', function() {
+                currentRating = parseInt(this.dataset.val);
+                updateStars(currentRating);
+            });
+        });
+
+        const updateStars = (val) => {
+            document.querySelectorAll('#star-rating i').forEach(s => {
+                const starVal = parseInt(s.dataset.val);
+                if(starVal <= val) {
+                    s.classList.remove('text-slate-300');
+                    s.classList.add('text-accent');
+                } else {
+                    s.classList.add('text-slate-300');
+                    s.classList.remove('text-accent');
+                }
+            });
+        };
+
+        window.submitReview = async () => {
+            const text = document.getElementById('review-text').value.trim();
+            
+            if(!state.user.token) {
+                showNotification('Барои навиштани шарҳ лутфан ворид шавед.', 'error');
+                setTimeout(() => window.location.href = 'sabtinom.html', 2000);
+                return;
+            }
+
+            if(currentRating === 0) {
+                showNotification('Лутфан баҳо гузоред!', 'error');
+                return;
+            }
+
+            if(!text) {
+                showNotification('Лутфан матни шарҳро нависед!', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.user.token}`
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        rating: currentRating,
+                        comment: text
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if(res.ok) {
+                    showNotification('Шарҳи шумо қабул шуд!', 'success');
+                    document.getElementById('review-text').value = '';
+                    currentRating = 0;
+                    updateStars(0);
+                    fetchReviews();
+                } else {
+                    showNotification(data.error || 'Хатогӣ рух дод.', 'error');
+                }
+            } catch(error) {
+                console.error('Хатогӣ:', error);
+                showNotification('Хатогӣ дар пайвастшавӣ ба сервер.', 'error');
+            }
+        };
+
+        const toggleMenu = () => {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            const isOpen = menu.classList.contains('open');
+            
+            if(isOpen) {
+                menu.classList.remove('open');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            } else {
+                menu.classList.add('open');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        };
+        
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMenu);
+        document.getElementById('close-menu-btn').addEventListener('click', toggleMenu);
+        document.getElementById('mobile-menu-overlay').addEventListener('click', toggleMenu);
+
+        updateUserUI();
+        updateCounts();
+        fetchProduct();
+    });
+</script>
+</body>
+</html>
