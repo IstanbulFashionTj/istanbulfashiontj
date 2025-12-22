@@ -316,7 +316,7 @@
                                         <label class="flex items-center text-slate-600 cursor-pointer">
                                             <input type="checkbox" class="mr-2 rounded text-primary focus:ring-primary border-slate-300"> Дар хотир дор
                                         </label>
-                                        <a href="reset_password.html" onclick="showForgotPassword()" class="font-bold text-primary hover:text-primary-dark">Рамзро фаромӯш кардед?</a>
+                                        <a href="reset_password.html" class="font-bold text-primary hover:text-primary-dark">Рамзро фаромӯш кардед?</a>
                                     </div>
 
                                     <button type="submit" id="login-btn" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/30 transition transform active:scale-95 mt-4">
@@ -374,32 +374,6 @@
                                     <button type="submit" id="reg-btn" class="w-full bg-dark hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 mt-4">
                                         Сабти ном кардан
                                     </button>
-                                </form>
-                            </div>
-
-                            <div id="forgot-password-container" class="form-hidden w-full mt-2">
-                                <div class="mb-6">
-                                    <h1 class="text-3xl font-extrabold text-dark mb-2">Барқарорсозии Рамз 🔐</h1>
-                                    <p class="text-slate-500 text-sm">Почтаи худро ворид кунед ва коди барқарорсозӣ паёнед.</p>
-                                </div>
-
-                                <form id="forgot-password-form" class="space-y-5">
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-700 mb-1 ml-1">Email</label>
-                                        <div class="relative">
-                                            <span class="absolute left-4 top-3.5 text-slate-400"><i class="fas fa-envelope"></i></span>
-                                            <input type="email" id="forgot-email" class="custom-input w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:outline-none" placeholder="nom@email.com" required>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex gap-2">
-                                        <button type="button" onclick="switchTab('login')" class="flex-1 px-4 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition">
-                                            Бозгашт
-                                        </button>
-                                        <button type="submit" id="forgot-btn" class="flex-1 px-4 py-3 bg-accent hover:bg-accent-dark text-white font-bold rounded-xl shadow-lg shadow-accent/20 transition">
-                                            Фиристодан
-                                        </button>
-                                    </div>
                                 </form>
                             </div>
 
@@ -550,15 +524,13 @@
                 }, 3000);
             };
 
-            // FIX: Make switchTab global so onclick attribute can see it
             window.switchTab = function(tab) {
                 const loginForm = document.getElementById('login-form-container');
                 const regForm = document.getElementById('register-form-container');
-                const forgotForm = document.getElementById('forgot-password-container');
                 const tabLogin = document.getElementById('tab-login');
                 const tabReg = document.getElementById('tab-register');
 
-                [loginForm, regForm, forgotForm].forEach(form => {
+                [loginForm, regForm].forEach(form => {
                     form.classList.remove('form-visible');
                     form.classList.add('form-hidden');
                 });
@@ -573,16 +545,7 @@
                     regForm.classList.add('form-visible');
                     tabLogin.classList.remove('active');
                     tabReg.classList.add('active');
-                } else if (tab === 'forgot') {
-                    forgotForm.classList.remove('form-hidden');
-                    forgotForm.classList.add('form-visible');
-                    tabLogin.classList.remove('active');
-                    tabReg.classList.remove('active');
                 }
-            };
-
-            window.showForgotPassword = () => {
-                window.switchTab('forgot');
             };
 
             window.togglePassword = (inputId, btn) => {
@@ -682,46 +645,7 @@
                     btn.disabled = false;
                 }
             });
-
-            document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const btn = document.getElementById('forgot-btn');
-                const originalText = btn.innerHTML;
-                
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Фиристодан...';
-
-                const email = document.getElementById('forgot-email').value;
-
-                try {
-                    const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email })
-                    });
-                    
-                    const data = await res.json();
-
-                    if (res.ok) {
-                        showNotification(data.message || 'Коди барқарорсозӣ ба почта фиристода шуд.', 'success');
-                        btn.innerHTML = 'Фиристода шуд';
-                        setTimeout(() => window.switchTab('login'), 2000);
-                    } else {
-                        showNotification(data.error || 'Хатогӣ дар фиристодани код.', 'error');
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }
-                } catch (err) {
-                    showNotification('Хатогии пайвастшавӣ бо сервер.', 'error');
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }
-            });
         });
     </script>
 </body>
-                                                                                                                   </html>
-
-
-
-
+</html>
