@@ -4,44 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  
+    <!-- Google Search Console verification -->
     <meta name="google-site-verification" content="IwD6d5oSelRMyJZ3CbrA1e7Ydo7TTmKIGZen79PO1wA" />
 
-  
+    <!-- ===== SEO ===== -->
     <title>Istanbul Fashion TJ — Либосҳои Туркӣ ва Узбекӣ дар Тоҷикистон</title>
 
     <meta name="description"
           content="Istanbul Fashion TJ — мағозаи расмии либосҳои Туркӣ ва Узбекӣ дар Тоҷикистон. Сифати олӣ, нархи дастрас, фармоиш онлайн." />
 
     <meta name="keywords"
-          content="Istanbul Fashion TJ, либосҳои туркӣ, либосҳои узбекӣ, мағозаи либос Душанбе, мода Тоҷикистон, хариди онлайн" />
+          content="Istanbul Fashion TJ, либосҳои туркӣ Душанбе, либосҳои узбекӣ, мағозаи либос Тоҷикистон, хариди онлайн" />
 
     <meta name="author" content="Istanbul Fashion TJ">
 
+    <!-- CANONICAL -->
+    <link rel="canonical" href="https://istanbulfashiontj.github.io/istanbulfashiontj/" />
 
-    <link rel="canonical" href="https://istanbulfashiontj.github.io/istanbulfashiontj" />
-
-
+    <!-- OPEN GRAPH -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Istanbul Fashion TJ">
     <meta property="og:title" content="Istanbul Fashion TJ — Либосҳои Туркӣ ва Узбекӣ">
     <meta property="og:description" content="Мағозаи расмии либосҳои Туркӣ ва Узбекӣ дар Тоҷикистон.">
-    <meta property="og:url" content="https://istanbulfashiontj.github.io/istanbulfashiontj">
+    <meta property="og:url" content="https://istanbulfashiontj.github.io/istanbulfashiontj/">
     <meta property="og:image" content="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png">
 
-
+    <!-- TWITTER -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Istanbul Fashion TJ">
     <meta name="twitter:description" content="Либосҳои муосири Туркӣ ва Узбекӣ дар Тоҷикистон.">
     <meta name="twitter:image" content="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png">
 
-
+    <!-- STRUCTURED DATA -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "ClothingStore",
       "name": "Istanbul Fashion TJ",
-      "url": "https://istanbulfashiontj.github.io/istanbulfashiontj",
+      "url": "https://istanbulfashiontj.github.io/istanbulfashiontj/",
       "logo": "https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png",
       "sameAs": [
         "https://www.instagram.com/istanbulfashion.tj/"
@@ -54,173 +54,98 @@
     }
     </script>
 
-   
+    <!-- STYLES & FONTS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-   
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/png" href="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <link rel="icon" type="image/png"
+          href="https://istanbulfashiontj.pythonanywhere.com/static/uploads/logo.png" />
+
+    <!-- CONFIGURATION SCRIPT (Аз коди аслӣ барқарор шуд барои кор кардани рангҳо) -->
+    <script>
+        const API_BASE = 'https://istanbulfashiontj.pythonanywhere.com';
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5FBF', 
+                        'primary-dark': '#6D28D9',
+                        accent: '#F59E0B', 
+                        'accent-dark': '#D97706',
+                        dark: '#0F172A',
+                        light: '#F8FAFC',
+                        surface: '#FFFFFF'
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                        'glow': '0 0 20px rgba(139, 95, 191, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        body {
-            font-family: 'Manrope', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
+        /* Услубҳои асосӣ аз коди нав */
+        body { font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #8B5FBF; }
+        .glass-nav { background: rgba(255,255,255,.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.3); }
+        .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .product-card {
-            transition: all 0.3s ease;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        .product-image-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 16px;
-        }
-        .product-image-container img {
-            transition: transform 0.5s ease;
-        }
-        .product-card:hover .product-image-container img {
-            transform: scale(1.05);
-        }
+        /* Услубҳои зарурӣ барои компонентҳо (Preloader, Card, Notification) аз коди пешина */
+        .product-card { transition: all 0.3s ease; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .product-image-container { position: relative; overflow: hidden; border-radius: 16px; }
+        .product-image-container img { transition: transform 0.5s ease; }
+        .product-card:hover .product-image-container img { transform: scale(1.05); }
         
-        .action-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .product-card:hover .action-overlay {
-            opacity: 1;
-        }
+        .action-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.2); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+        .product-card:hover .action-overlay { opacity: 1; }
         
         @media (max-width: 640px) {
-            .action-overlay {
-                background: transparent;
-                opacity: 1;
-                align-items: flex-end;
-                justify-content: flex-end;
-                padding: 10px;
-                pointer-events: none; 
-            }
-            .action-btn-mobile {
-                pointer-events: auto;
-                background: white;
-                color: #8B5FBF;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            }
+            .action-overlay { background: transparent; opacity: 1; align-items: flex-end; justify-content: flex-end; padding: 10px; pointer-events: none; }
+            .action-btn-mobile { pointer-events: auto; background: white; color: #8B5FBF; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         }
 
-        #preloader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #ffffff; 
-            z-index: 9999; 
-            display: flex;
-            justify-content: center; 
-            align-items: center;
-            transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
-        }
-
-        .video-wrapper {
-            width: 180px; 
-            height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .video-wrapper video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.6s ease-out, visibility 0.6s ease-out; }
+        .video-wrapper { width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; }
+        .video-wrapper video { width: 100%; height: 100%; object-fit: contain; }
         
-        .mobile-menu {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-        }
+        .mobile-menu { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
         .mobile-menu.open { transform: translateX(0); }
         
-        .category-card {
-            position: relative;
-            overflow: hidden;
-            border-radius: 16px;
-        }
-        
-        .category-overlay {
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
-        }
+        .category-card { position: relative; overflow: hidden; border-radius: 16px; }
+        .category-overlay { background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, transparent 100%); }
 
-        /* Styles for the new beautiful Toast Notification */
-        #app-notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            z-index: 9999;
-            width: 90%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #app-notification.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-
+        /* Notification Styles */
+        #app-notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); z-index: 9999; width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 12px 16px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255, 255, 255, 0.5); transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; pointer-events: none; }
+        #app-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
         #app-notification.success { border-left: 4px solid #10B981; }
         #app-notification.error { border-left: 4px solid #EF4444; }
-
-        .notif-icon-box {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
+        .notif-icon-box { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .success .notif-icon-box { background: #D1FAE5; color: #10B981; }
         .error .notif-icon-box { background: #FEE2E2; color: #EF4444; }
     </style>
 </head>
+
 <body class="bg-light text-slate-800">
+
+    <!-- SEO H1 (ПИНҲОНӢ, АММО ХЕЛЕ МУҲИМ) -->
+    <h1 class="sr-only">Istanbul Fashion TJ — Мағозаи либосҳои Туркӣ ва Узбекӣ дар Тоҷикистон</h1>
 
     <div id="preloader">
         <div class="video-wrapper">
