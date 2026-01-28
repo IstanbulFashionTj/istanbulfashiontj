@@ -437,6 +437,62 @@
         </div>
     </footer>
 
+    <!-- AI Chat Widget Code -->
+    <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-[100] font-sans">
+        <!-- Chat Window -->
+        <div id="chat-window" class="hidden flex-col w-[350px] max-w-[calc(100vw-48px)] h-[450px] max-h-[70vh] bg-white rounded-2xl shadow-2xl mb-4 border border-slate-200 overflow-hidden transition-all duration-300 origin-bottom-right transform scale-95 opacity-0">
+            <!-- Header -->
+            <div class="bg-primary p-4 flex justify-between items-center text-white shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-robot text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base leading-tight">Istanbul AI</h3>
+                        <div class="flex items-center gap-1.5 opacity-90">
+                            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                            <p class="text-xs font-medium">Онлайн ёрдамчӣ</p>
+                        </div>
+                    </div>
+                </div>
+                <button id="close-chat" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="chat-messages" class="flex-1 bg-slate-50 p-4 overflow-y-auto space-y-4 scroll-smooth">
+                <!-- Welcome Message -->
+                <div class="flex items-start gap-3 max-w-[90%]">
+                     <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm shrink-0 border border-primary/10">
+                        <i class="fas fa-robot"></i>
+                     </div>
+                     <div class="bg-white p-3 rounded-2xl rounded-tl-none text-sm text-slate-700 shadow-sm border border-slate-100 leading-relaxed">
+                        Салом! Ман ёрдамчии ҳушманди <b>Istanbul Fashion</b>.
+                        <br><br>
+                        Шумо метавонед дар бораи нархҳо, андозаҳо ва интиқол пурсед. Чӣ хел кӯмак кунам?
+                     </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-3 bg-white border-t border-slate-100 shrink-0">
+                <form id="chat-form" class="relative flex items-center gap-2">
+                    <input type="text" id="chat-input" class="w-full bg-slate-100 border-none rounded-full pl-5 pr-12 py-3 text-sm focus:ring-2 focus:ring-primary focus:bg-white transition-all outline-none placeholder:text-slate-400" placeholder="Саволи худро нависед..." autocomplete="off">
+                    <button type="submit" id="chat-submit-btn" class="absolute right-2 p-2 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary-dark transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-paper-plane text-xs translate-x-[-1px] translate-y-[1px]"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Toggle Button -->
+        <button id="chat-toggle-btn" class="w-16 h-16 bg-primary text-white rounded-full shadow-glow flex items-center justify-center text-2xl hover:scale-105 active:scale-95 transition-all duration-300 relative overflow-hidden group">
+            <div class="absolute inset-0 bg-white/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+            <i class="fas fa-comment-alt relative z-10 transition-transform duration-300 group-hover:rotate-12"></i>
+        </button>
+    </div>
+
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
@@ -921,6 +977,143 @@
         renderUser();
         fetchData();
     });
+
+    // Chat Logic
+    (function() {
+        const els = {
+            widget: document.getElementById('ai-chat-widget'),
+            window: document.getElementById('chat-window'),
+            toggleBtn: document.getElementById('chat-toggle-btn'),
+            closeBtn: document.getElementById('close-chat'),
+            messages: document.getElementById('chat-messages'),
+            form: document.getElementById('chat-form'),
+            input: document.getElementById('chat-input'),
+            submitBtn: document.getElementById('chat-submit-btn'),
+            toggleIcon: document.querySelector('#chat-toggle-btn i')
+        };
+
+        let isOpen = false;
+        const API_URL = 'https://istanbulfashiontj.pythonanywhere.com/api/chat';
+
+        // Toggle Chat
+        function toggleChat() {
+            isOpen = !isOpen;
+            if (isOpen) {
+                els.window.classList.remove('hidden');
+                els.toggleIcon.classList.remove('fa-comment-alt');
+                els.toggleIcon.classList.add('fa-chevron-down');
+                setTimeout(() => {
+                    els.window.classList.remove('scale-95', 'opacity-0');
+                    els.window.classList.add('scale-100', 'opacity-100');
+                    els.input.focus();
+                    scrollToBottom();
+                }, 10);
+            } else {
+                els.window.classList.remove('scale-100', 'opacity-100');
+                els.window.classList.add('scale-95', 'opacity-0');
+                els.toggleIcon.classList.remove('fa-chevron-down');
+                els.toggleIcon.classList.add('fa-comment-alt');
+                setTimeout(() => els.window.classList.add('hidden'), 300);
+            }
+        }
+
+        els.toggleBtn.addEventListener('click', toggleChat);
+        els.closeBtn.addEventListener('click', toggleChat);
+
+        function scrollToBottom() {
+            els.messages.scrollTop = els.messages.scrollHeight;
+        }
+
+        function appendUserMessage(text) {
+            const div = document.createElement('div');
+            div.className = 'flex items-end justify-end gap-2 max-w-[90%] ml-auto animate-[fadeIn_0.3s_ease-out]';
+            div.innerHTML = `
+                <div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-md leading-relaxed break-words">
+                    ${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                </div>
+            `;
+            els.messages.appendChild(div);
+            scrollToBottom();
+        }
+
+        function appendBotMessage(text) {
+            const div = document.createElement('div');
+            div.className = 'flex items-end gap-3 max-w-[90%] mr-auto animate-[fadeIn_0.3s_ease-out]';
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm shrink-0 border border-primary/10">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="bg-white p-3 rounded-2xl rounded-tl-none text-sm text-slate-700 shadow-sm border border-slate-100 leading-relaxed break-words">
+                    ${text}
+                </div>
+            `;
+            els.messages.appendChild(div);
+            scrollToBottom();
+        }
+
+        function showTyping() {
+            const div = document.createElement('div');
+            div.id = 'typing-indicator';
+            div.className = 'flex items-end gap-3 max-w-[90%] mr-auto animate-[fadeIn_0.3s_ease-out]';
+            div.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm shrink-0 border border-primary/10">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 flex gap-1 items-center h-10">
+                    <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+                    <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+                    <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                </div>
+            `;
+            els.messages.appendChild(div);
+            scrollToBottom();
+        }
+
+        function removeTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        els.form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = els.input.value.trim();
+            if (!text) return;
+
+            // User Message
+            appendUserMessage(text);
+            els.input.value = '';
+            els.input.disabled = true;
+            els.submitBtn.disabled = true;
+
+            // Typing Indicator
+            showTyping();
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+
+                removeTyping();
+
+                if (response.ok) {
+                    const data = await response.json();
+                    appendBotMessage(data.answer);
+                } else {
+                    appendBotMessage('Маъзарат, ҳоло пайвастшавӣ ба сервер имконнопазир аст. Лутфан дертар кӯшиш кунед.');
+                }
+            } catch (error) {
+                console.error('Chat Error:', error);
+                removeTyping();
+                appendBotMessage('Хатогӣ дар шабака. Лутфан интернет-ро тафтиш кунед.');
+            } finally {
+                els.input.disabled = false;
+                els.submitBtn.disabled = false;
+                els.input.focus();
+            }
+        });
+    })();
 </script>
 </body>
 </html>
