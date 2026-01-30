@@ -93,7 +93,7 @@
     </script>
 
     <style>
-        /* Услубҳои асосӣ аз коди нав */
+        /* Услубҳои асосӣ */
         body { font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -102,7 +102,7 @@
         .glass-nav { background: rgba(255,255,255,.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.3); }
         .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
-        /* Услубҳои зарурӣ барои компонентҳо (Preloader, Card, Notification) аз коди пешина */
+        /* Услубҳои зарурӣ барои компонентҳо */
         .product-card { transition: all 0.3s ease; }
         .product-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
         .product-image-container { position: relative; overflow: hidden; border-radius: 16px; }
@@ -135,6 +135,14 @@
         .notif-icon-box { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .success .notif-icon-box { background: #D1FAE5; color: #10B981; }
         .error .notif-icon-box { background: #FEE2E2; color: #EF4444; }
+        
+        /* Chat Widget Styles */
+        #ai-chat-widget { font-family: 'Manrope', sans-serif; }
+        #chat-window { transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 
@@ -150,7 +158,6 @@
             </video>
         </div>
     </div>
-
 
     <div id="app-notification">
         <div class="notif-icon-box">
@@ -495,12 +502,50 @@
 
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        AOS.init({ duration: 800, offset: 50, once: true });
+    
+    <script>
+        // Функсияҳои умумӣ
+        window.API_BASE = 'https://istanbulfashiontj.pythonanywhere.com';
         
-        const preloader = document.getElementById('preloader');
+        // Функсияи чоп кардани огоҳӣ
+        function showNotification(message, type = 'success') {
+            const notif = document.getElementById('app-notification');
+            const title = document.getElementById('notif-title');
+            const msg = document.getElementById('notif-message');
+            const iconBox = notif.querySelector('.notif-icon-box');
+            const icon = iconBox.querySelector('i');
+            
+            notif.className = ''; 
+            if (type === 'success') {
+                notif.classList.add('success');
+                title.innerText = 'Муваффақона!';
+                icon.className = 'fas fa-check';
+            } else {
+                notif.classList.add('error');
+                title.innerText = 'Огоҳӣ!';
+                icon.className = 'fas fa-exclamation';
+            }
+            
+            msg.innerText = message;
+            notif.classList.add('show');
+            
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        }
+
+        // Функсияи гирифтани URL-и тасвир
+        function getImageUrl(path) {
+            if (!path) return '';
+            if (path.startsWith('http') || path.startsWith('https')) return path;
+            if (path.startsWith('/static/uploads/')) return window.API_BASE + path;
+            if (path.includes('uploads/')) return window.API_BASE + '/static/' + path;
+            return `${window.API_BASE}/static/uploads/${path}`;
+        }
+
+        // Функсияи хомӯш кардани preloader
         function hidePreloader() {
+            const preloader = document.getElementById('preloader');
             if (preloader) {
                 preloader.style.opacity = '0';
                 setTimeout(() => {
@@ -509,130 +554,21 @@
                 }, 500);
             }
         }
-        setTimeout(hidePreloader, 1500);
-        
-        const state = {
-            cart: JSON.parse(localStorage.getItem('cart') || '[]'),
-            wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]'),
-            allProducts: [], 
-            user: {
-                token: localStorage.getItem('userToken'),
-                name: localStorage.getItem('userName'),
-                id: localStorage.getItem('userId')
-            }
-        };
 
-        const els = {
-            cartCount: document.getElementById('cart-count'),
-            wishlistCount: document.getElementById('wishlist-count'),
-            userSection: document.getElementById('user-section'),
-            mobileUserCard: document.getElementById('mobile-user-card'),
-            productsGrid: document.getElementById('products-grid'),
-            categoriesGrid: document.getElementById('categories-grid'),
-            categoriesList: document.getElementById('mobile-categories-list'),
-            desktopCategoriesDropdown: document.getElementById('desktop-categories-dropdown'),
-            heroWrapper: document.getElementById('hero-wrapper'),
-        };
-
-        const handleSearch = (e) => {
-            if (e.key === 'Enter') {
-                const query = e.target.value.trim();
-                if (query) {
-                    window.location.href = `magazin.html?q=${encodeURIComponent(query)}`;
-                }
-            }
-        };
-
-        const desktopSearchInput = document.getElementById('desktop-search-input');
-        const mobileSearchInput = document.getElementById('mobile-search-input');
-
-        if(desktopSearchInput) desktopSearchInput.addEventListener('keydown', handleSearch);
-        if(mobileSearchInput) mobileSearchInput.addEventListener('keydown', handleSearch);
-
-        const updateCounts = () => {
-            els.cartCount.innerText = state.cart.reduce((a, b) => a + (b.quantity || 1), 0);
-            
-            const wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
-            els.wishlistCount.innerText = wishlistItems.length;
-            
-            els.cartCount.style.transform = state.cart.length > 0 ? 'scale(1)' : 'scale(0)';
-            els.wishlistCount.style.transform = wishlistItems.length > 0 ? 'scale(1)' : 'scale(0)';
-        };
-
-        const renderUser = () => {
-            if (state.user.token) {
-                els.userSection.innerHTML = `
-                    <div class="relative group cursor-pointer ml-2">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold shadow-lg">
-                            ${state.user.name ? state.user.name.charAt(0).toUpperCase() : 'U'}
-                        </div>
-                        <div class="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 w-48 z-50">
-                            <div class="bg-white rounded-xl shadow-soft p-2 border border-slate-100">
-                                <div class="px-3 py-2 border-b border-slate-100 mb-1">
-                                    <p class="font-bold text-sm text-dark truncate">${state.user.name || 'Муштарӣ'}</p>
-                                    <p class="text-xs text-slate-500">Муштарӣ</p>
-                                </div>
-                                <a href="account.html" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition"><i class="fas fa-user-circle mr-2"></i> Кабинет</a>
-                                <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition"><i class="fas fa-sign-out-alt mr-2"></i> Баромад</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                els.mobileUserCard.innerHTML = `
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold text-xl shadow-md">
-                        ${state.user.name ? state.user.name.charAt(0).toUpperCase() : 'U'}
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-bold text-dark">${state.user.name || 'Муштарӣ'}</p>
-                        <button onclick="logout()" class="text-xs text-red-500 font-medium hover:underline">Баромад кардан</button>
-                    </div>
-                    <a href="account.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Кабинет</a>
-                `;
-            } else {
-                const loginBtn = `<a href="sabtinom.html" class="ml-2 px-5 py-2 bg-dark text-white text-sm font-semibold rounded-full hover:bg-primary transition shadow-lg hover:shadow-primary/30">Воридшавӣ</a>`;
-                els.userSection.innerHTML = loginBtn;
-                els.mobileUserCard.innerHTML = `
-                    <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xl">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-bold text-dark">Хуш омадед!</p>
-                        <p class="text-xs text-slate-500">Барои харид ворид шавед</p>
-                    </div>
-                    <a href="sabtinom.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Ворид</a>
-                `;
-            }
-        };
-
-        window.logout = () => {
-            localStorage.removeItem('userToken');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userId');
-            window.location.reload();
-        };
-
-        const getImageUrl = (path) => {
-            if (!path) return '';
-            if (path.startsWith('http') || path.startsWith('https')) return path;
-            if (path.startsWith('/static/uploads/')) return API_BASE + path;
-            if (path.includes('uploads/')) return API_BASE + '/static/' + path;
-            return `${API_BASE}/static/uploads/${path}`;
-        };
-
-        const fetchData = async () => {
+        // Функсияи боркунии маълумот
+        async function fetchData() {
             try {
                 const [slidesRes, productsRes, catsRes] = await Promise.all([
-                    fetch(`${API_BASE}/api/slides`),
-                    fetch(`${API_BASE}/api/products?sort_by=newest`),
-                    fetch(`${API_BASE}/api/categories`),
+                    fetch(`${window.API_BASE}/api/slides`),
+                    fetch(`${window.API_BASE}/api/products?sort_by=newest`),
+                    fetch(`${window.API_BASE}/api/categories`),
                 ]);
 
                 const slides = await slidesRes.json();
                 const products = await productsRes.json();
                 const categories = await catsRes.json();
                 
-                state.allProducts = products;
+                window.state.allProducts = products;
 
                 renderSlides(slides);
                 renderProducts(products);
@@ -640,62 +576,17 @@
 
             } catch (err) {
                 console.error('Error fetching data:', err);
+                showNotification('Хатогӣ дар боргирии маълумот', 'error');
             }
-        };
+        }
 
-        const renderCategories = (categories) => {
-            const placeholders = [
-                'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=500&q=80',
-                'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=500&q=80',
-                'https://images.unsplash.com/photo-1542060748-10c28b62716f?auto=format&fit=crop&w=500&q=80',
-                'https://images.unsplash.com/photo-1551488852-d814399e74d1?auto=format&fit=crop&w=500&q=80'
-            ];
+        // Функсияи намоиши слайдҳо
+        function renderSlides(slides) {
+            const heroWrapper = document.getElementById('hero-wrapper');
+            if (!heroWrapper) return;
 
-            els.categoriesList.innerHTML = categories.map(cat => `
-                <a href="magazin.html?category=${cat.name_tj}" class="block px-4 py-2 text-slate-500 hover:text-primary transition flex items-center justify-between">
-                    ${cat.name_tj} <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-400">${cat.product_count || 0}</span>
-                </a>
-            `).join('');
-
-            els.desktopCategoriesDropdown.innerHTML = categories.map(cat => `
-                <a href="magazin.html?category=${cat.name_tj}" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition">
-                    ${cat.name_tj}
-                </a>
-            `).join('');
-
-            let displayCategories = categories;
-            if (window.innerWidth < 768) {
-                displayCategories = categories.slice(0, 6);
-            }
-
-            if (displayCategories.length === 0) {
-                 els.categoriesGrid.innerHTML = '<div class="col-span-full text-center text-slate-400">Категорияҳо ёфт нашуданд.</div>';
-                 return;
-            }
-
-            els.categoriesGrid.innerHTML = displayCategories.map((cat, idx) => {
-                let imageSrc = getImageUrl(cat.image_url || cat.image); 
-                
-                if (!imageSrc) {
-                     imageSrc = placeholders[idx % placeholders.length];
-                }
-                
-                return `
-                <a href="magazin.html?category=${cat.name_tj}" class="category-card block group relative overflow-hidden rounded-2xl aspect-square shadow-md hover:shadow-xl transition-all duration-300" data-aos="fade-up" data-aos-delay="${idx * 50}">
-                    <img src="${imageSrc}" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="${cat.name_tj}" onerror="this.src='https://placehold.co/400?text=No+Image'">
-                    <div class="category-overlay absolute inset-0 flex flex-col justify-end p-6 transition duration-300">
-                        <h3 class="text-white text-xl sm:text-2xl font-bold translate-y-2 group-hover:translate-y-0 transition duration-300 drop-shadow-md">${cat.name_tj}</h3>
-                        <div class="flex items-center justify-between mt-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-x-1 transition duration-300 delay-75">
-                            <span class="w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center shadow-lg transform group-hover:translate-x-1 transition"><i class="fas fa-arrow-right text-sm"></i></span>
-                        </div>
-                    </div>
-                </a>
-            `}).join('');
-        };
-
-        const renderSlides = (slides) => {
             if (!slides.length) {
-                els.heroWrapper.innerHTML = `
+                heroWrapper.innerHTML = `
                     <div class="swiper-slide relative">
                         <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1920&q=80" class="absolute inset-0 w-full h-full object-cover" alt="Fashion">
                         <div class="absolute inset-0 bg-gradient-to-r from-dark/80 to-transparent"></div>
@@ -714,7 +605,7 @@
                 return;
             }
             
-            els.heroWrapper.innerHTML = slides.map(slide => `
+            heroWrapper.innerHTML = slides.map(slide => `
                 <div class="swiper-slide relative">
                     <img src="${getImageUrl(slide.image_url || slide.image)}" class="absolute inset-0 w-full h-full object-cover" alt="${slide.title}" onerror="this.src='https://placehold.co/1920x800/292524/e7e5e4?text=Slide+Image'">
                     <div class="absolute inset-0 bg-gradient-to-r from-dark/80 to-transparent"></div>
@@ -731,31 +622,99 @@
                 </div>
             `).join('');
 
-            new Swiper('.hero-swiper', {
-                loop: true,
-                effect: 'fade',
-                speed: 1000,
-                autoplay: { delay: 5000, disableOnInteraction: false },
-                pagination: { el: '.swiper-pagination', clickable: true },
-                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-            });
-        };
+            // Инициализацияи Swiper
+            if (typeof Swiper !== 'undefined') {
+                new Swiper('.hero-swiper', {
+                    loop: true,
+                    effect: 'fade',
+                    speed: 1000,
+                    autoplay: { delay: 5000, disableOnInteraction: false },
+                    pagination: { el: '.swiper-pagination', clickable: true },
+                    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                });
+            }
+        }
 
-        const renderProducts = (products) => {
+        // Функсияи намоиши категорияҳо
+        function renderCategories(categories) {
+            const categoriesList = document.getElementById('mobile-categories-list');
+            const desktopCategoriesDropdown = document.getElementById('desktop-categories-dropdown');
+            const categoriesGrid = document.getElementById('categories-grid');
+
+            if (!categoriesList || !desktopCategoriesDropdown || !categoriesGrid) return;
+
+            const placeholders = [
+                'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1542060748-10c28b62716f?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1551488852-d814399e74d1?auto=format&fit=crop&w=500&q=80'
+            ];
+
+            // Mobile categories list
+            categoriesList.innerHTML = categories.map(cat => `
+                <a href="magazin.html?category=${encodeURIComponent(cat.name_tj)}" class="block px-4 py-2 text-slate-500 hover:text-primary transition flex items-center justify-between">
+                    ${cat.name_tj} <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-400">${cat.product_count || 0}</span>
+                </a>
+            `).join('');
+
+            // Desktop dropdown
+            desktopCategoriesDropdown.innerHTML = categories.map(cat => `
+                <a href="magazin.html?category=${encodeURIComponent(cat.name_tj)}" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition">
+                    ${cat.name_tj}
+                </a>
+            `).join('');
+
+            // Main categories grid
+            let displayCategories = categories;
+            if (window.innerWidth < 768) {
+                displayCategories = categories.slice(0, 6);
+            }
+
+            if (displayCategories.length === 0) {
+                categoriesGrid.innerHTML = '<div class="col-span-full text-center text-slate-400">Категорияҳо ёфт нашуданд.</div>';
+                return;
+            }
+
+            categoriesGrid.innerHTML = displayCategories.map((cat, idx) => {
+                let imageSrc = getImageUrl(cat.image_url || cat.image); 
+                
+                if (!imageSrc) {
+                    imageSrc = placeholders[idx % placeholders.length];
+                }
+                
+                return `
+                <a href="magazin.html?category=${encodeURIComponent(cat.name_tj)}" class="category-card block group relative overflow-hidden rounded-2xl aspect-square shadow-md hover:shadow-xl transition-all duration-300" data-aos="fade-up" data-aos-delay="${idx * 50}">
+                    <img src="${imageSrc}" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="${cat.name_tj}" onerror="this.src='https://placehold.co/400?text=No+Image'">
+                    <div class="category-overlay absolute inset-0 flex flex-col justify-end p-6 transition duration-300">
+                        <h3 class="text-white text-xl sm:text-2xl font-bold translate-y-2 group-hover:translate-y-0 transition duration-300 drop-shadow-md">${cat.name_tj}</h3>
+                        <div class="flex items-center justify-between mt-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-x-1 transition duration-300 delay-75">
+                            <span class="w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center shadow-lg transform group-hover:translate-x-1 transition"><i class="fas fa-arrow-right text-sm"></i></span>
+                        </div>
+                    </div>
+                </a>
+            `}).join('');
+        }
+
+        // Функсияи намоиши маҳсулотҳо
+        function renderProducts(products) {
+            const productsGrid = document.getElementById('products-grid');
+            if (!productsGrid) return;
+
             const latest = products.slice(0, 8);
             
             if (latest.length === 0) {
-                 els.productsGrid.innerHTML = '<div class="col-span-full text-center text-slate-400 p-8">Маҳсулоти нав ёфт нашуд.</div>';
-                 return;
+                productsGrid.innerHTML = '<div class="col-span-full text-center text-slate-400 p-8">Маҳсулоти нав ёфт нашуд.</div>';
+                return;
             }
 
-            els.productsGrid.innerHTML = latest.map((p, idx) => {
+            const wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+
+            productsGrid.innerHTML = latest.map((p, idx) => {
                 const price = p.price;
                 const oldPrice = p.old_price ? `<span class="text-xs text-slate-400 line-through mr-2">${p.old_price} с.</span>` : '';
                 const discount = p.old_price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : 0;
                 const badge = discount > 0 ? `<div class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md z-20">-${discount}%</div>` : '';
                 
-                const wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
                 const isInWishlist = wishlistItems.some(item => {
                     if (typeof item === 'object') {
                         return item.id === p.id;
@@ -801,36 +760,11 @@
                 </div>
                 `;
             }).join('');
-        };
+        }
 
-        const showNotification = (message, type = 'success') => {
-            const notif = document.getElementById('app-notification');
-            const title = document.getElementById('notif-title');
-            const msg = document.getElementById('notif-message');
-            const iconBox = notif.querySelector('.notif-icon-box');
-            const icon = iconBox.querySelector('i');
-            
-            notif.className = ''; 
-            if (type === 'success') {
-                notif.classList.add('success');
-                title.innerText = 'Муваффақона!';
-                icon.className = 'fas fa-check';
-            } else {
-                notif.classList.add('error');
-                title.innerText = 'Огоҳӣ!';
-                icon.className = 'fas fa-exclamation';
-            }
-            
-            msg.innerText = message;
-            notif.classList.add('show');
-            
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 3000);
-        };
-
+        // Функсияи илова кардан/хориҷ кардан аз wishlist
         window.toggleWishlist = async (productId, buttonElement) => {
-            const product = state.allProducts.find(p => p.id === productId);
+            const product = window.state.allProducts.find(p => p.id === productId);
             if (!product) return;
 
             let wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
@@ -849,12 +783,12 @@
                     return parseInt(item) !== parseInt(productId);
                 });
                 
-                if (state.user.token) {
+                if (window.state.user.token) {
                     try {
-                        await fetch(`${API_BASE}/api/wishlist/${productId}`, {
+                        await fetch(`${window.API_BASE}/api/wishlist/${productId}`, {
                             method: 'DELETE',
                             headers: {
-                                'Authorization': `Bearer ${state.user.token}`
+                                'Authorization': `Bearer ${window.state.user.token}`
                             }
                         });
                     } catch (error) {
@@ -875,12 +809,12 @@
                 
                 wishlistItems.push(itemToAdd);
                 
-                if (state.user.token) {
+                if (window.state.user.token) {
                     try {
-                        await fetch(`${API_BASE}/api/wishlist/${productId}`, {
+                        await fetch(`${window.API_BASE}/api/wishlist/${productId}`, {
                             method: 'POST',
                             headers: {
-                                'Authorization': `Bearer ${state.user.token}`,
+                                'Authorization': `Bearer ${window.state.user.token}`,
                                 'Content-Type': 'application/json'
                             }
                         });
@@ -894,226 +828,435 @@
             }
 
             localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
-            state.wishlist = wishlistItems;
+            window.state.wishlist = wishlistItems;
             updateCounts();
         };
 
-        window.addToCart = (productId) => {
-            const product = state.allProducts.find(p => p.id === productId);
-            if (!product) return;
-
-            const existingItem = state.cart.find(item => item.id === productId);
+        // Функсияи навсозии ададҳо
+        function updateCounts() {
+            const cartCount = document.getElementById('cart-count');
+            const wishlistCount = document.getElementById('wishlist-count');
             
-            if (existingItem) {
-                existingItem.quantity = (existingItem.quantity || 1) + 1;
-                showNotification(`Миқдори "${product.name_tj}" зиёд карда шуд.`, 'success');
-            } else {
-                state.cart.push({
-                    id: product.id,
-                    name_tj: product.name_tj,
-                    price: product.price,
-                    image_url: product.image_url || product.image,
-                    quantity: 1
-                });
-                showNotification(`"${product.name_tj}" ба сабад илова шуд!`, 'success');
+            if (cartCount) {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                cartCount.innerText = cart.reduce((a, b) => a + (b.quantity || 1), 0);
+                cartCount.style.transform = cart.length > 0 ? 'scale(1)' : 'scale(0)';
             }
+            
+            if (wishlistCount) {
+                const wishlistItems = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                wishlistCount.innerText = wishlistItems.length;
+                wishlistCount.style.transform = wishlistItems.length > 0 ? 'scale(1)' : 'scale(0)';
+            }
+        }
 
-            localStorage.setItem('cart', JSON.stringify(state.cart));
-            updateCounts();
-        };
+        // Функсияи намоиши корбар
+        function renderUser() {
+            const userSection = document.getElementById('user-section');
+            const mobileUserCard = document.getElementById('mobile-user-card');
+            
+            if (!userSection || !mobileUserCard) return;
 
-        document.getElementById('subscribe-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('sub-email').value;
-            const msg = document.getElementById('sub-message');
-            msg.innerText = "Равон карда мешавад...";
-            msg.className = "text-sm mt-3 h-5 font-bold text-slate-300";
-
-            try {
-                const res = await fetch(`${API_BASE}/api/subscribe`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email })
-                });
-                const data = await res.json();
+            if (window.state.user.token) {
+                const userName = window.state.user.name || 'Муштарӣ';
+                const userInitial = userName.charAt(0).toUpperCase();
                 
-                msg.innerText = data.message || data.error;
-                if(res.ok) {
-                    msg.className = "text-sm mt-3 h-5 font-bold text-green-400";
-                    showNotification(data.message, 'success');
-                    e.target.reset();
-                } else {
+                userSection.innerHTML = `
+                    <div class="relative group cursor-pointer ml-2">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold shadow-lg">
+                            ${userInitial}
+                        </div>
+                        <div class="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 w-48 z-50">
+                            <div class="bg-white rounded-xl shadow-soft p-2 border border-slate-100">
+                                <div class="px-3 py-2 border-b border-slate-100 mb-1">
+                                    <p class="font-bold text-sm text-dark truncate">${userName}</p>
+                                    <p class="text-xs text-slate-500">Муштарӣ</p>
+                                </div>
+                                <a href="account.html" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition"><i class="fas fa-user-circle mr-2"></i> Кабинет</a>
+                                <button onclick="logout()" class="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-red-50 rounded-lg transition"><i class="fas fa-sign-out-alt mr-2"></i> Баромад</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                mobileUserCard.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold text-xl shadow-md">
+                        ${userInitial}
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-dark">${userName}</p>
+                        <button onclick="logout()" class="text-xs text-red-500 font-medium hover:underline">Баромад кардан</button>
+                    </div>
+                    <a href="account.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Кабинет</a>
+                `;
+            } else {
+                const loginBtn = `<a href="sabtinom.html" class="ml-2 px-5 py-2 bg-dark text-white text-sm font-semibold rounded-full hover:bg-primary transition shadow-lg hover:shadow-primary/30">Воридшавӣ</a>`;
+                userSection.innerHTML = loginBtn;
+                
+                mobileUserCard.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xl">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold text-dark">Хуш омадед!</p>
+                        <p class="text-xs text-slate-500">Барои харид ворид шавед</p>
+                    </div>
+                    <a href="sabtinom.html" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg shadow-lg shadow-primary/30">Ворид</a>
+                `;
+            }
+        }
+
+        // Функсияи баромад аз система
+        window.logout = () => {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userEmail');
+            window.location.reload();
+        };
+
+        // Функсияи обуна ба рӯйхати почта
+        function setupSubscribeForm() {
+            const subscribeForm = document.getElementById('subscribe-form');
+            if (!subscribeForm) return;
+
+            subscribeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('sub-email').value.trim();
+                const msg = document.getElementById('sub-message');
+                
+                if (!email || !email.includes('@')) {
+                    msg.innerText = "Почтаи электронии нодуруст";
                     msg.className = "text-sm mt-3 h-5 font-bold text-red-400";
-                    showNotification(data.error, 'error');
+                    return;
                 }
-            } catch(e) {
-                msg.innerText = "Хатогӣ рӯй дод";
-                msg.className = "text-sm mt-3 h-5 text-red-400";
-                showNotification('Хатогӣ рӯй дод', 'error');
-            }
-        });
 
-        const toggleMenu = () => {
-            const menu = document.getElementById('mobile-menu');
-            const overlay = document.getElementById('mobile-menu-overlay');
-            const isOpen = menu.classList.contains('open');
+                msg.innerText = "Равон карда мешавад...";
+                msg.className = "text-sm mt-3 h-5 font-bold text-slate-300";
+
+                try {
+                    const res = await fetch(`${window.API_BASE}/api/subscribe`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if(res.ok) {
+                        msg.innerText = data.message;
+                        msg.className = "text-sm mt-3 h-5 font-bold text-green-400";
+                        showNotification(data.message, 'success');
+                        subscribeForm.reset();
+                    } else {
+                        msg.innerText = data.error || data.message;
+                        msg.className = "text-sm mt-3 h-5 font-bold text-red-400";
+                        showNotification(data.error || 'Хатогӣ рӯй дод', 'error');
+                    }
+                } catch(e) {
+                    msg.innerText = "Хатогӣ дар пайвастшавӣ";
+                    msg.className = "text-sm mt-3 h-5 font-bold text-red-400";
+                    showNotification('Хатогӣ дар пайвастшавӣ', 'error');
+                }
+            });
+        }
+
+        // Функсияи менюи мобилӣ
+        function setupMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeMenuBtn = document.getElementById('close-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
             
-            if(isOpen) {
-                menu.classList.remove('open');
-                overlay.classList.add('hidden');
-                document.body.style.overflow = '';
-            } else {
-                menu.classList.add('open');
-                overlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-        };
-        
-        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMenu);
-        document.getElementById('close-menu-btn').addEventListener('click', toggleMenu);
-        document.getElementById('mobile-menu-overlay').addEventListener('click', toggleMenu);
+            if (!mobileMenuBtn || !closeMenuBtn || !mobileMenu || !mobileMenuOverlay) return;
 
-        updateCounts();
-        renderUser();
-        fetchData();
-    });
-
-    // Chat Logic
-    (function() {
-        const els = {
-            widget: document.getElementById('ai-chat-widget'),
-            window: document.getElementById('chat-window'),
-            toggleBtn: document.getElementById('chat-toggle-btn'),
-            closeBtn: document.getElementById('close-chat'),
-            messages: document.getElementById('chat-messages'),
-            form: document.getElementById('chat-form'),
-            input: document.getElementById('chat-input'),
-            submitBtn: document.getElementById('chat-submit-btn'),
-            toggleIcon: document.querySelector('#chat-toggle-btn i')
-        };
-
-        let isOpen = false;
-        const API_URL = 'https://istanbulfashiontj.pythonanywhere.com/api/chat';
-
-        // Toggle Chat
-        function toggleChat() {
-            isOpen = !isOpen;
-            if (isOpen) {
-                els.window.classList.remove('hidden');
-                els.toggleIcon.classList.remove('fa-comment-alt');
-                els.toggleIcon.classList.add('fa-chevron-down');
-                setTimeout(() => {
-                    els.window.classList.remove('scale-95', 'opacity-0');
-                    els.window.classList.add('scale-100', 'opacity-100');
-                    els.input.focus();
-                    scrollToBottom();
-                }, 10);
-            } else {
-                els.window.classList.remove('scale-100', 'opacity-100');
-                els.window.classList.add('scale-95', 'opacity-0');
-                els.toggleIcon.classList.remove('fa-chevron-down');
-                els.toggleIcon.classList.add('fa-comment-alt');
-                setTimeout(() => els.window.classList.add('hidden'), 300);
-            }
-        }
-
-        els.toggleBtn.addEventListener('click', toggleChat);
-        els.closeBtn.addEventListener('click', toggleChat);
-
-        function scrollToBottom() {
-            els.messages.scrollTop = els.messages.scrollHeight;
-        }
-
-        function appendUserMessage(text) {
-            const div = document.createElement('div');
-            div.className = 'flex items-end justify-end gap-2 max-w-[90%] ml-auto animate-[fadeIn_0.3s_ease-out]';
-            div.innerHTML = `
-                <div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-md leading-relaxed break-words">
-                    ${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
-                </div>
-            `;
-            els.messages.appendChild(div);
-            scrollToBottom();
-        }
-
-        function appendBotMessage(text) {
-            const div = document.createElement('div');
-            div.className = 'flex items-end gap-3 max-w-[90%] mr-auto animate-[fadeIn_0.3s_ease-out]';
-            div.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm shrink-0 border border-primary/10">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <div class="bg-white p-3 rounded-2xl rounded-tl-none text-sm text-slate-700 shadow-sm border border-slate-100 leading-relaxed break-words">
-                    ${text}
-                </div>
-            `;
-            els.messages.appendChild(div);
-            scrollToBottom();
-        }
-
-        function showTyping() {
-            const div = document.createElement('div');
-            div.id = 'typing-indicator';
-            div.className = 'flex items-end gap-3 max-w-[90%] mr-auto animate-[fadeIn_0.3s_ease-out]';
-            div.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm shrink-0 border border-primary/10">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 flex gap-1 items-center h-10">
-                    <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
-                    <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
-                    <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
-                </div>
-            `;
-            els.messages.appendChild(div);
-            scrollToBottom();
-        }
-
-        function removeTyping() {
-            const typing = document.getElementById('typing-indicator');
-            if (typing) typing.remove();
-        }
-
-        els.form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = els.input.value.trim();
-            if (!text) return;
-
-            // User Message
-            appendUserMessage(text);
-            els.input.value = '';
-            els.input.disabled = true;
-            els.submitBtn.disabled = true;
-
-            // Typing Indicator
-            showTyping();
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
-                });
-
-                removeTyping();
-
-                if (response.ok) {
-                    const data = await response.json();
-                    appendBotMessage(data.answer);
+            function toggleMenu() {
+                const isOpen = mobileMenu.classList.contains('open');
+                
+                if(isOpen) {
+                    mobileMenu.classList.remove('open');
+                    mobileMenuOverlay.classList.add('hidden');
+                    document.body.style.overflow = '';
                 } else {
-                    appendBotMessage('Маъзарат, ҳоло пайвастшавӣ ба сервер имконнопазир аст. Лутфан дертар кӯшиш кунед.');
+                    mobileMenu.classList.add('open');
+                    mobileMenuOverlay.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+            
+            mobileMenuBtn.addEventListener('click', toggleMenu);
+            closeMenuBtn.addEventListener('click', toggleMenu);
+            mobileMenuOverlay.addEventListener('click', toggleMenu);
+        }
+
+        // Функсияи ҷустуҷӯ
+        function setupSearch() {
+            const desktopSearchInput = document.getElementById('desktop-search-input');
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+            
+            function handleSearch(e) {
+                if (e.key === 'Enter') {
+                    const query = e.target.value.trim();
+                    if (query) {
+                        window.location.href = `magazin.html?q=${encodeURIComponent(query)}`;
+                    }
+                }
+            }
+            
+            if (desktopSearchInput) {
+                desktopSearchInput.addEventListener('keydown', handleSearch);
+            }
+            
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('keydown', handleSearch);
+            }
+        }
+
+        // Функсияи инициализацияи AOS
+        function initAOS() {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({ 
+                    duration: 800, 
+                    offset: 50, 
+                    once: true,
+                    disable: window.innerWidth < 768 ? true : false
+                });
+            }
+        }
+
+        // Функсияи санҷиши пайвастшавии чат
+        async function testChatConnection() {
+            try {
+                const response = await fetch(window.API_BASE + '/api/chat/test');
+                if (response.ok) {
+                    console.log('✅ Chat API connected successfully');
+                } else {
+                    console.warn('⚠️ Chat API connection issue');
                 }
             } catch (error) {
-                console.error('Chat Error:', error);
-                removeTyping();
-                appendBotMessage('Хатогӣ дар шабака. Лутфан интернет-ро тафтиш кунед.');
-            } finally {
-                els.input.disabled = false;
-                els.submitBtn.disabled = false;
-                els.input.focus();
+                console.error('❌ Chat API connection failed:', error);
             }
+        }
+
+        // Функсияҳои чат бот
+        function initChatWidget() {
+            const els = {
+                widget: document.getElementById('ai-chat-widget'),
+                window: document.getElementById('chat-window'),
+                toggleBtn: document.getElementById('chat-toggle-btn'),
+                closeBtn: document.getElementById('close-chat'),
+                messages: document.getElementById('chat-messages'),
+                form: document.getElementById('chat-form'),
+                input: document.getElementById('chat-input'),
+                submitBtn: document.getElementById('chat-submit-btn'),
+                toggleIcon: document.querySelector('#chat-toggle-btn i')
+            };
+
+            let isOpen = false;
+
+            // Функсияи тағйири ҳолати чат
+            function toggleChat() {
+                isOpen = !isOpen;
+                if (isOpen) {
+                    els.window.classList.remove('hidden');
+                    els.toggleIcon.classList.remove('fa-comment-alt');
+                    els.toggleIcon.classList.add('fa-chevron-down');
+                    setTimeout(() => {
+                        els.window.classList.remove('scale-95', 'opacity-0');
+                        els.window.classList.add('scale-100', 'opacity-100');
+                        els.input.focus();
+                        scrollToBottom();
+                    }, 10);
+                } else {
+                    els.window.classList.remove('scale-100', 'opacity-100');
+                    els.window.classList.add('scale-95', 'opacity-0');
+                    els.toggleIcon.classList.remove('fa-chevron-down');
+                    els.toggleIcon.classList.add('fa-comment-alt');
+                    setTimeout(() => els.window.classList.add('hidden'), 300);
+                }
+            }
+
+            // Функсияи скрол ба поён
+            function scrollToBottom() {
+                els.messages.scrollTop = els.messages.scrollHeight;
+            }
+
+            // Функсияи илова кардани паёми корбар
+            function appendUserMessage(text) {
+                const div = document.createElement('div');
+                div.className = 'flex items-end justify-end gap-2 max-w-[90%] ml-auto animate-[fadeIn_0.3s_ease-out]';
+                div.innerHTML = `
+                    <div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-md leading-relaxed break-words">
+                        ${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+                    </div>
+                `;
+                els.messages.appendChild(div);
+                scrollToBottom();
+            }
+
+            // Функсияи илова кардани паёми бот
+            function appendBotMessage(text) {
+                const div = document.createElement('div');
+                div.className = 'flex items-end gap-3 max-w-[90%] mr-auto animate-[fadeIn_0.3s_ease-out]';
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm shrink-0 border border-primary/10">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none text-sm text-slate-700 shadow-sm border border-slate-100 leading-relaxed break-words">
+                        ${text}
+                    </div>
+                `;
+                els.messages.appendChild(div);
+                scrollToBottom();
+            }
+
+            // Функсияи намоиши таҳияи ҷавоб
+            function showTyping() {
+                const div = document.createElement('div');
+                div.id = 'typing-indicator';
+                div.className = 'flex items-end gap-3 max-w-[90%] mr-auto animate-[fadeIn_0.3_ease-out]';
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm shrink-0 border border-primary/10">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 flex gap-1 items-center h-10">
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                    </div>
+                `;
+                els.messages.appendChild(div);
+                scrollToBottom();
+            }
+
+            // Функсияи пок кардани индикатори таҳия
+            function removeTyping() {
+                const typing = document.getElementById('typing-indicator');
+                if (typing) typing.remove();
+            }
+
+            // Функсияи фиристодани паём ба сервер
+            async function sendChatMessage(text) {
+                try {
+                    const response = await fetch(window.API_BASE + '/api/chat', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ message: text })
+                    });
+
+                    removeTyping();
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        appendBotMessage(data.answer);
+                    } else {
+                        const errorData = await response.text();
+                        console.error('Server Error:', errorData);
+                        appendBotMessage('Хатогӣ дар сервер. Лутфан баъдтар кӯшиш кунед.');
+                    }
+                } catch (error) {
+                    console.error('Network Error:', error);
+                    removeTyping();
+                    appendBotMessage('Хатогӣ дар шабака. Лутфан интернет-ро тафтиш кунед ё ба дастгирӣ муроҷиат кунед: +992 81-639-99-99');
+                }
+            }
+
+            // Иловаи event listener барои формаи чат
+            if (els.form) {
+                els.form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const text = els.input.value.trim();
+                    if (!text) return;
+
+                    // Паёми корбар
+                    appendUserMessage(text);
+                    els.input.value = '';
+                    els.input.disabled = true;
+                    els.submitBtn.disabled = true;
+
+                    // Индикатори таҳия
+                    showTyping();
+
+                    // Фиристодани паём
+                    await sendChatMessage(text);
+
+                    // Боз кардани input
+                    els.input.disabled = false;
+                    els.submitBtn.disabled = false;
+                    els.input.focus();
+                });
+            }
+
+            // Event listener барои тугмаҳои чат
+            if (els.toggleBtn) {
+                els.toggleBtn.addEventListener('click', toggleChat);
+            }
+            
+            if (els.closeBtn) {
+                els.closeBtn.addEventListener('click', toggleChat);
+            }
+
+            // Барои true/false-и он ки чат кушода аст ё не
+            window.toggleChat = toggleChat;
+        }
+
+        // Инициализацияи саҳифа
+        document.addEventListener('DOMContentLoaded', () => {
+            // Сохтани state
+            window.state = {
+                cart: JSON.parse(localStorage.getItem('cart') || '[]'),
+                wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]'),
+                allProducts: [], 
+                user: {
+                    token: localStorage.getItem('userToken'),
+                    name: localStorage.getItem('userName'),
+                    id: localStorage.getItem('userId'),
+                    email: localStorage.getItem('userEmail'),
+                    role: localStorage.getItem('userRole')
+                }
+            };
+
+            // Инициализацияи китобхонаҳо
+            initAOS();
+            
+            // Хомӯш кардани preloader
+            setTimeout(hidePreloader, 1500);
+            
+            // Назорат кардани менюи мобилӣ
+            setupMobileMenu();
+            
+            // Назорат кардани ҷустуҷӯ
+            setupSearch();
+            
+            // Назорат кардани обуна
+            setupSubscribeForm();
+            
+            // Навсозии ададҳо
+            updateCounts();
+            
+            // Намоиши корбар
+            renderUser();
+            
+            // Боркунии маълумот
+            fetchData();
+            
+            // Санҷиши пайвастшавии чат
+            testChatConnection();
+            
+            // Инициализацияи чат бот
+            initChatWidget();
+            
+            // Дар вақти resize навсозии AOS
+            window.addEventListener('resize', () => {
+                if (typeof AOS !== 'undefined') {
+                    AOS.refresh();
+                }
+            });
         });
-    })();
-</script>
+    </script>
 </body>
 </html>
