@@ -520,11 +520,12 @@
             </div>
 
             <div class="p-3 bg-white border-t border-slate-100 shrink-0 pb-safe z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
-                <form id="chat-form" class="relative flex items-end gap-2" onsubmit="event.preventDefault()">
+                <form id="chat-form" class="relative flex items-end gap-2" onsubmit="return false;">
                     <div class="relative flex-1 bg-slate-100 rounded-2xl transition-all focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-white border border-transparent focus-within:border-primary/30">
                         <textarea id="chat-input" rows="1" class="w-full bg-transparent border-none px-4 py-3 text-sm focus:ring-0 resize-none max-h-24 outline-none placeholder:text-slate-400 text-slate-700" placeholder="Саволи худро нависед..." autocomplete="off"></textarea>
                     </div>
-                    <button type="submit" id="chat-submit-btn" class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary-dark transition shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed group shrink-0 mb-0.5">
+                    <!-- TYPE=BUTTON IS CRITICAL HERE -->
+                    <button type="button" id="chat-submit-btn" class="w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary-dark transition shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed group shrink-0 mb-0.5">
                         <i class="fas fa-paper-plane text-sm translate-x-[-1px] translate-y-[1px] group-hover:scale-110 transition-transform"></i>
                     </button>
                 </form>
@@ -1183,32 +1184,41 @@
                     appendBotMessage('Хатогӣ дар шабака. Лутфан интернет-ро тафтиш кунед.');
                 }
             }
+            
+            // Logic to handle message submission
+            async function handleMessageSubmit() {
+                const text = els.input.value.trim();
+                if (!text) return;
 
-            if (els.form) {
-                els.form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const text = els.input.value.trim();
-                    if (!text) return;
+                appendUserMessage(text);
+                els.input.value = '';
+                els.input.style.height = 'auto'; 
+                els.input.disabled = true;
+                els.submitBtn.disabled = true;
 
-                    appendUserMessage(text);
-                    els.input.value = '';
-                    els.input.style.height = 'auto'; 
-                    els.input.disabled = true;
-                    els.submitBtn.disabled = true;
+                showTyping();
 
-                    showTyping();
+                await sendChatMessage(text);
 
-                    await sendChatMessage(text);
+                els.input.disabled = false;
+                els.submitBtn.disabled = false;
+                els.input.focus();
+            }
 
-                    els.input.disabled = false;
-                    els.submitBtn.disabled = false;
-                    els.input.focus();
+            // Click listener for the BUTTON (now type="button")
+            if (els.submitBtn) {
+                els.submitBtn.addEventListener('click', (e) => {
+                    e.preventDefault(); // Good practice
+                    handleMessageSubmit();
                 });
+            }
 
+            // Keydown listener for the INPUT
+            if (els.input) {
                 els.input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        els.form.dispatchEvent(new Event('submit'));
+                        e.preventDefault(); // Stop newline
+                        handleMessageSubmit(); // Call logic directly
                     }
                 });
                 
@@ -1219,10 +1229,11 @@
                 });
             }
 
+            // Suggestions listener
             els.suggestions.forEach(btn => {
                 btn.addEventListener('click', () => {
                    els.input.value = btn.innerText;
-                   els.form.dispatchEvent(new Event('submit'));
+                   handleMessageSubmit();
                 });
             });
 
