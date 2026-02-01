@@ -116,7 +116,6 @@
     </script>
 
     <style>
-        /* Услубҳои асосӣ */
         body { font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -125,7 +124,6 @@
         .glass-nav { background: rgba(255,255,255,.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.3); }
         .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
-        /* Услубҳои зарурӣ барои компонентҳо */
         .product-card { transition: all 0.3s ease; }
         .product-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
         .product-image-container { position: relative; overflow: hidden; border-radius: 16px; }
@@ -150,7 +148,6 @@
         .category-card { position: relative; overflow: hidden; border-radius: 16px; }
         .category-overlay { background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, transparent 100%); }
 
-        /* Notification Styles */
         #app-notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); z-index: 9999; width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 12px 16px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255, 255, 255, 0.5); transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; pointer-events: none; }
         #app-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
         #app-notification.success { border-left: 4px solid #10B981; }
@@ -159,11 +156,9 @@
         .success .notif-icon-box { background: #D1FAE5; color: #10B981; }
         .error .notif-icon-box { background: #FEE2E2; color: #EF4444; }
         
-        /* Chat Widget Styles Specifics */
         .chat-bubble-user { border-radius: 18px 18px 2px 18px; box-shadow: 0 2px 5px rgba(139, 95, 191, 0.2); }
         .chat-bubble-bot { border-radius: 18px 18px 18px 2px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); }
         
-        /* Safe area for mobile iPhones */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
@@ -309,28 +304,28 @@
         <section class="py-10 bg-white border-b border-slate-100">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
-                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition" data-aos="fade-up" data-aos-delay="0">
+                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition">
                         <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-1">
                             <i class="fas fa-truck text-xl"></i>
                         </div>
                         <h3 class="font-bold text-sm sm:text-base">Расонидан</h3>
                         <p class="text-xs text-slate-500">Суръат ва сифат</p>
                     </div>
-                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition">
                         <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent mb-1">
                             <i class="fas fa-medal text-xl"></i>
                         </div>
                         <h3 class="font-bold text-sm sm:text-base">Сифати Аслӣ</h3>
                         <p class="text-xs text-slate-500">Истеҳсоли Туркия</p>
                     </div>
-                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition">
                         <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 mb-1">
                             <i class="fas fa-undo text-xl"></i>
                         </div>
                         <h3 class="font-bold text-sm sm:text-base">Бозгашт</h3>
                         <p class="text-xs text-slate-500">Кафолати иваз</p>
                     </div>
-                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex flex-col items-center text-center gap-2 p-4 rounded-2xl hover:bg-slate-50 transition">
                         <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-1">
                             <i class="fas fa-headset text-xl"></i>
                         </div>
@@ -466,31 +461,23 @@
         </div>
     </footer>
 
-    <!-- UPDATED: AI Chat Widget Code -->
     <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-[100] font-sans">
         
-        <!-- Toggle Button (Floating Action Button) -->
         <button id="chat-toggle-btn" class="w-14 h-14 md:w-16 md:h-16 bg-primary text-white rounded-full shadow-glow flex items-center justify-center text-2xl hover:scale-105 active:scale-95 transition-all duration-300 relative overflow-hidden group z-[101]">
             <div class="absolute inset-0 bg-white/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-            <!-- Notification Dot -->
             <span class="absolute top-3 right-3 w-3 h-3 bg-red-500 border-2 border-primary rounded-full animate-pulse"></span>
             <i class="fas fa-comment-dots relative z-10 transition-transform duration-300"></i>
         </button>
 
-        <!-- Chat Window / Modal -->
-        <!-- Logic: On Mobile fixed inset-0 (fullscreen), On Desktop fixed bottom/right card -->
         <div id="chat-window" class="fixed inset-0 md:inset-auto md:bottom-24 md:right-6 w-full h-full md:w-[380px] md:h-[600px] md:max-h-[80vh] bg-surface md:rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 invisible opacity-0 translate-y-4 z-[110]">
             
-            <!-- Header -->
             <div class="bg-primary p-4 pb-6 flex justify-between items-start text-white shrink-0 relative overflow-hidden">
-                <!-- Background Decoration -->
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
                 <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
                 
                 <div class="flex items-center gap-3 relative z-10">
                     <div class="w-11 h-11 rounded-full bg-white/20 p-0.5 backdrop-blur-sm border border-white/30">
                          <div class="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                             <!-- Use a bot avatar or icon -->
                              <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Bot" class="w-8 h-8 object-contain">
                          </div>
                     </div>
@@ -508,14 +495,11 @@
                 </button>
             </div>
 
-            <!-- Messages Area -->
             <div id="chat-messages" class="flex-1 bg-[#F0F2F5] p-4 overflow-y-auto space-y-4 scroll-smooth pb-safe">
-                <!-- Welcome Message Date -->
                 <div class="flex justify-center my-2">
                     <span class="text-[10px] bg-slate-200 text-slate-500 px-2 py-1 rounded-full font-medium">Имрӯз</span>
                 </div>
 
-                <!-- Welcome Message -->
                 <div class="flex items-end gap-2 max-w-[85%] animate-fade-in">
                      <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary text-xs shrink-0 shadow-sm border border-slate-100">
                         <i class="fas fa-robot"></i>
@@ -528,7 +512,6 @@
                      </div>
                 </div>
                 
-                <!-- Quick Suggestions -->
                 <div class="flex flex-wrap gap-2 pl-10 animate-fade-in delay-100">
                     <button class="suggestion-btn px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs text-slate-600 hover:bg-primary hover:text-white transition shadow-sm">Нархҳо</button>
                     <button class="suggestion-btn px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs text-slate-600 hover:bg-primary hover:text-white transition shadow-sm">Интиқол</button>
@@ -536,9 +519,8 @@
                 </div>
             </div>
 
-            <!-- Input Area -->
             <div class="p-3 bg-white border-t border-slate-100 shrink-0 pb-safe z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
-                <form id="chat-form" class="relative flex items-end gap-2">
+                <form id="chat-form" class="relative flex items-end gap-2" onsubmit="event.preventDefault()">
                     <div class="relative flex-1 bg-slate-100 rounded-2xl transition-all focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-white border border-transparent focus-within:border-primary/30">
                         <textarea id="chat-input" rows="1" class="w-full bg-transparent border-none px-4 py-3 text-sm focus:ring-0 resize-none max-h-24 outline-none placeholder:text-slate-400 text-slate-700" placeholder="Саволи худро нависед..." autocomplete="off"></textarea>
                     </div>
@@ -552,7 +534,6 @@
             </div>
         </div>
         
-        <!-- Backdrop for mobile -->
         <div id="chat-backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[105] hidden opacity-0 transition-opacity duration-300 md:hidden"></div>
     </div>
 
@@ -560,10 +541,8 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
     <script>
-        // Функсияҳои умумӣ
         window.API_BASE = 'https://istanbulfashiontj.pythonanywhere.com';
         
-        // Функсияи чоп кардани огоҳӣ
         function showNotification(message, type = 'success') {
             const notif = document.getElementById('app-notification');
             const title = document.getElementById('notif-title');
@@ -590,7 +569,6 @@
             }, 3000);
         }
 
-        // Функсияи гирифтани URL-и тасвир
         function getImageUrl(path) {
             if (!path) return '';
             if (path.startsWith('http') || path.startsWith('https')) return path;
@@ -599,7 +577,6 @@
             return `${window.API_BASE}/static/uploads/${path}`;
         }
 
-        // Функсияи хомӯш кардани preloader
         function hidePreloader() {
             const preloader = document.getElementById('preloader');
             if (preloader) {
@@ -611,7 +588,6 @@
             }
         }
 
-        // Функсияи боркунии маълумот
         async function fetchData() {
             try {
                 const [slidesRes, productsRes, catsRes] = await Promise.all([
@@ -636,7 +612,6 @@
             }
         }
 
-        // Функсияи намоиши слайдҳо
         function renderSlides(slides) {
             const heroWrapper = document.getElementById('hero-wrapper');
             if (!heroWrapper) return;
@@ -678,7 +653,6 @@
                 </div>
             `).join('');
 
-            // Инициализацияи Swiper
             if (typeof Swiper !== 'undefined') {
                 new Swiper('.hero-swiper', {
                     loop: true,
@@ -691,7 +665,6 @@
             }
         }
 
-        // Функсияи намоиши категорияҳо
         function renderCategories(categories) {
             const categoriesList = document.getElementById('mobile-categories-list');
             const desktopCategoriesDropdown = document.getElementById('desktop-categories-dropdown');
@@ -706,21 +679,18 @@
                 'https://images.unsplash.com/photo-1551488852-d814399e74d1?auto=format&fit=crop&w=500&q=80'
             ];
 
-            // Mobile categories list
             categoriesList.innerHTML = categories.map(cat => `
                 <a href="magazin.html?category=${encodeURIComponent(cat.name_tj)}" class="block px-4 py-2 text-slate-500 hover:text-primary transition flex items-center justify-between">
                     ${cat.name_tj} <span class="text-xs bg-slate-100 px-2 py-1 rounded text-slate-400">${cat.product_count || 0}</span>
                 </a>
             `).join('');
 
-            // Desktop dropdown
             desktopCategoriesDropdown.innerHTML = categories.map(cat => `
                 <a href="magazin.html?category=${encodeURIComponent(cat.name_tj)}" class="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-primary rounded-lg transition">
                     ${cat.name_tj}
                 </a>
             `).join('');
 
-            // Main categories grid
             let displayCategories = categories;
             if (window.innerWidth < 768) {
                 displayCategories = categories.slice(0, 6);
@@ -739,7 +709,7 @@
                 }
                 
                 return `
-                <a href="magazin.html?category=${encodeURIComponent(cat.name_tj)}" class="category-card block group relative overflow-hidden rounded-2xl aspect-square shadow-md hover:shadow-xl transition-all duration-300" data-aos="fade-up" data-aos-delay="${idx * 50}">
+                <a href="magazin.html?category=${encodeURIComponent(cat.name_tj)}" class="category-card block group relative overflow-hidden rounded-2xl aspect-square shadow-md hover:shadow-xl transition-all duration-300">
                     <img src="${imageSrc}" class="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="${cat.name_tj}" onerror="this.src='https://placehold.co/400?text=No+Image'">
                     <div class="category-overlay absolute inset-0 flex flex-col justify-end p-6 transition duration-300">
                         <h3 class="text-white text-xl sm:text-2xl font-bold translate-y-2 group-hover:translate-y-0 transition duration-300 drop-shadow-md">${cat.name_tj}</h3>
@@ -751,7 +721,6 @@
             `}).join('');
         }
 
-        // Функсияи намоиши маҳсулотҳо
         function renderProducts(products) {
             const productsGrid = document.getElementById('products-grid');
             if (!productsGrid) return;
@@ -780,7 +749,7 @@
                 const heartClass = isInWishlist ? 'fas text-red-500' : 'far';
 
                 return `
-                <div class="product-card bg-white rounded-2xl p-3 shadow-soft border border-slate-50 group" data-aos="fade-up" data-aos-delay="${idx * 50}">
+                <div class="product-card bg-white rounded-2xl p-3 shadow-soft border border-slate-50 group">
                     <div class="product-image-container relative bg-slate-100 aspect-[3/4] mb-4">
                         <a href="mahsolot.html?id=${p.id}" class="block w-full h-full">
                             <img src="${getImageUrl(p.image_url || p.image)}" class="w-full h-full object-cover" alt="${p.name_tj}" onerror="this.src='https://placehold.co/400x600/f1f5f9/94a3b8?text=No+Image'">
@@ -818,7 +787,6 @@
             }).join('');
         }
 
-        // Функсияи илова кардан/хориҷ кардан аз wishlist
         window.toggleWishlist = async (productId, buttonElement) => {
             const product = window.state.allProducts.find(p => p.id === productId);
             if (!product) return;
@@ -888,7 +856,6 @@
             updateCounts();
         };
 
-        // Функсияи навсозии ададҳо
         function updateCounts() {
             const cartCount = document.getElementById('cart-count');
             const wishlistCount = document.getElementById('wishlist-count');
@@ -906,7 +873,6 @@
             }
         }
 
-        // Функсияи намоиши корбар
         function renderUser() {
             const userSection = document.getElementById('user-section');
             const mobileUserCard = document.getElementById('mobile-user-card');
@@ -962,7 +928,6 @@
             }
         }
 
-        // Функсияи баромад аз система
         window.logout = () => {
             localStorage.removeItem('userToken');
             localStorage.removeItem('userName');
@@ -972,7 +937,6 @@
             window.location.reload();
         };
 
-        // Функсияи обуна ба рӯйхати почта
         function setupSubscribeForm() {
             const subscribeForm = document.getElementById('subscribe-form');
             if (!subscribeForm) return;
@@ -1018,7 +982,6 @@
             });
         }
 
-        // Функсияи менюи мобилӣ
         function setupMobileMenu() {
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const closeMenuBtn = document.getElementById('close-menu-btn');
@@ -1046,7 +1009,6 @@
             mobileMenuOverlay.addEventListener('click', toggleMenu);
         }
 
-        // Функсияи ҷустуҷӯ
         function setupSearch() {
             const desktopSearchInput = document.getElementById('desktop-search-input');
             const mobileSearchInput = document.getElementById('mobile-search-input');
@@ -1069,7 +1031,6 @@
             }
         }
 
-        // Функсияи инициализацияи AOS
         function initAOS() {
             if (typeof AOS !== 'undefined') {
                 AOS.init({ 
@@ -1081,7 +1042,6 @@
             }
         }
 
-        // Функсияи санҷиши пайвастшавии чат
         async function testChatConnection() {
             try {
                 const response = await fetch(window.API_BASE + '/api/chat/test');
@@ -1095,7 +1055,6 @@
             }
         }
 
-        // Функсияҳои чат бот (REFACTORED FOR NEW DESIGN)
         function initChatWidget() {
             const els = {
                 widget: document.getElementById('ai-chat-widget'),
@@ -1112,17 +1071,14 @@
 
             let isOpen = false;
 
-            // Функсияи тағйири ҳолати чат
             function toggleChat() {
                 isOpen = !isOpen;
                 
                 if (isOpen) {
-                    // Open
                     els.window.classList.remove('invisible', 'opacity-0', 'translate-y-4');
                     els.window.classList.add('visible', 'opacity-100', 'translate-y-0');
                     els.toggleBtn.classList.add('scale-0', 'opacity-0');
                     
-                    // Show backdrop on mobile
                     if (window.innerWidth < 768) {
                         els.backdrop.classList.remove('hidden');
                         document.body.style.overflow = 'hidden';
@@ -1134,12 +1090,10 @@
                         scrollToBottom();
                     }, 300);
                 } else {
-                    // Close
                     els.window.classList.remove('visible', 'opacity-100', 'translate-y-0');
                     els.window.classList.add('invisible', 'opacity-0', 'translate-y-4');
                     els.toggleBtn.classList.remove('scale-0', 'opacity-0');
                     
-                    // Hide backdrop
                     if (window.innerWidth < 768) {
                         els.backdrop.classList.add('opacity-0');
                         document.body.style.overflow = '';
@@ -1148,12 +1102,10 @@
                 }
             }
 
-            // Функсияи скрол ба поён
             function scrollToBottom() {
                 els.messages.scrollTop = els.messages.scrollHeight;
             }
 
-            // Функсияи илова кардани паёми корбар
             function appendUserMessage(text) {
                 const div = document.createElement('div');
                 div.className = 'flex items-end justify-end gap-2 max-w-[85%] ml-auto animate-fade-in';
@@ -1166,7 +1118,6 @@
                 scrollToBottom();
             }
 
-            // Функсияи илова кардани паёми бот
             function appendBotMessage(text) {
                 const div = document.createElement('div');
                 div.className = 'flex items-end gap-2 max-w-[85%] animate-fade-in';
@@ -1182,7 +1133,6 @@
                 scrollToBottom();
             }
 
-            // Функсияи намоиши таҳияи ҷавоб
             function showTyping() {
                 const div = document.createElement('div');
                 div.id = 'typing-indicator';
@@ -1201,13 +1151,11 @@
                 scrollToBottom();
             }
 
-            // Функсияи пок кардани индикатори таҳия
             function removeTyping() {
                 const typing = document.getElementById('typing-indicator');
                 if (typing) typing.remove();
             }
 
-            // Функсияи фиристодани паём ба сервер
             async function sendChatMessage(text) {
                 try {
                     const response = await fetch(window.API_BASE + '/api/chat', {
@@ -1236,33 +1184,27 @@
                 }
             }
 
-            // Иловаи event listener барои формаи чат
             if (els.form) {
                 els.form.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const text = els.input.value.trim();
                     if (!text) return;
 
-                    // Паёми корбар
                     appendUserMessage(text);
                     els.input.value = '';
-                    els.input.style.height = 'auto'; // Reset height
+                    els.input.style.height = 'auto'; 
                     els.input.disabled = true;
                     els.submitBtn.disabled = true;
 
-                    // Индикатори таҳия
                     showTyping();
 
-                    // Фиристодани паём
                     await sendChatMessage(text);
 
-                    // Боз кардани input
                     els.input.disabled = false;
                     els.submitBtn.disabled = false;
                     els.input.focus();
                 });
 
-                // Enter key to submit (Shift+Enter for new line)
                 els.input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -1270,7 +1212,6 @@
                     }
                 });
                 
-                // Auto resize textarea
                 els.input.addEventListener('input', function() {
                     this.style.height = 'auto';
                     this.style.height = (this.scrollHeight) + 'px';
@@ -1278,7 +1219,6 @@
                 });
             }
 
-            // Quick suggestions click handler
             els.suggestions.forEach(btn => {
                 btn.addEventListener('click', () => {
                    els.input.value = btn.innerText;
@@ -1286,7 +1226,6 @@
                 });
             });
 
-            // Event listener барои тугмаҳои чат
             if (els.toggleBtn) els.toggleBtn.addEventListener('click', toggleChat);
             if (els.closeBtn) els.closeBtn.addEventListener('click', toggleChat);
             if (els.backdrop) els.backdrop.addEventListener('click', toggleChat);
@@ -1294,9 +1233,7 @@
             window.toggleChat = toggleChat;
         }
 
-        // Инициализацияи саҳифа
         document.addEventListener('DOMContentLoaded', () => {
-            // Сохтани state
             window.state = {
                 cart: JSON.parse(localStorage.getItem('cart') || '[]'),
                 wishlist: JSON.parse(localStorage.getItem('wishlist') || '[]'),
@@ -1310,37 +1247,26 @@
                 }
             };
 
-            // Инициализацияи китобхонаҳо
             initAOS();
             
-            // Хомӯш кардани preloader
             setTimeout(hidePreloader, 1500);
             
-            // Назорат кардани менюи мобилӣ
             setupMobileMenu();
             
-            // Назорат кардани ҷустуҷӯ
             setupSearch();
             
-            // Назорат кардани обуна
             setupSubscribeForm();
             
-            // Навсозии ададҳо
             updateCounts();
             
-            // Намоиши корбар
             renderUser();
             
-            // Боркунии маълумот
             fetchData();
             
-            // Санҷиши пайвастшавии чат
             testChatConnection();
             
-            // Инициализацияи чат бот
             initChatWidget();
             
-            // Дар вақти resize навсозии AOS
             window.addEventListener('resize', () => {
                 if (typeof AOS !== 'undefined') {
                     AOS.refresh();
